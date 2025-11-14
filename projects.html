@@ -22,54 +22,81 @@
       <h1>data projects</h1>
       <div class="grid cards">
         
-        <!-- Project 1 -->
+        <!-- Project 1: ASI -->
         <article class="card">
-          <h3>bharatIndustryR</h3>
+          <h3>asi</h3>
           <p>
-            An <strong>R package</strong> that harmonises India’s 
-            <em>Annual Survey of Industries (ASI)</em> and 
-            <em>Annual Survey of Unincorporated Sector Enterprises (ASUSE)</em> 
-            into a clean, research-ready format.  
+            An <strong>R package</strong> that builds a long-format dataset from India’s 
+            <em>Annual Survey of Industries (ASI)</em> and stores it in a local 
+            <strong>DuckDB</strong> database.
           </p>
           <p>
-            It provides functions to compute industrial cluster metrics 
-            (LQ, HHI, productivity), compare formal vs informal enterprises, 
-            and generate <code>district × industry × year</code> panels.  
+            The package provides helpers to download and organise multiple ASI rounds,
+            query tables on the fly with <code>dplyr</code>, and construct
+            <code>state × industry × year</code> panels for further analysis.
           </p>
           <p>
-            The package includes tools for cleaning, aggregation, deflation, 
-            and mapping, enabling researchers to explore India’s industrial 
-            structure at multiple levels.
+            Example use cases include computing indicators such as average manufacturing
+            days by rural/urban status, and mapping state-level industrial activity with
+            <code>sf</code> and <code>ggplot2</code>.
           </p>
           <p>
-            <a href="https://github.com/your-handle/bharatIndustryR" target="_blank" rel="noopener">GitHub Repository</a>
+            <a href="https://github.com/rahulsh97/asi" target="_blank" rel="noopener">
+              GitHub Repository
+            </a>
           </p>
         </article>
 
-        <!-- Project 2 -->
+        <!-- Project 2: ASUSE -->
+        <article class="card">
+          <h3>asuse</h3>
+          <p>
+            An <strong>R package</strong> for working with the 
+            <em>Annual Survey of Unincorporated Sector Enterprises (ASUSE)</em> for India,
+            exposed as a long-format database via <strong>DuckDB</strong>.
+          </p>
+          <p>
+            The package downloads raw ASUSE files, builds a local database, and lets users
+            query large tables directly with <code>dplyr</code> (e.g. rural–urban shares
+            of enterprises, sectoral distributions, and regional aggregates).
+          </p>
+          <p>
+            It is designed for scalable exploration of the unincorporated sector, including
+            tasks like computing the proportion of rural enterprises by NSS-region and
+            visualising patterns on maps using <code>sf</code> and <code>ggplot2</code>.
+          </p>
+          <p>
+            <a href="https://github.com/rahulsh97/asuse" target="_blank" rel="noopener">
+              GitHub Repository
+            </a>
+          </p>
+        </article>
+
+        <!-- Project 3: BharatViz -->
         <article class="card">
           <h3>BharatViz</h3>
           <p>
-            An <strong>interactive Shiny dashboard</strong> that integrates 
-            industrial clusters (ASI/ASUSE), labour market inequality and 
-            migration (PLFS), and socio-economic deprivation 
-            (SECC/NFHS/Census) into one platform.  
+            An <strong>interactive Shiny dashboard</strong> that brings together industrial
+            clusters (from ASI/ASUSE), labour market inequality and migration (PLFS), and
+            socio-economic deprivation (SECC/NFHS/Census) in a single interface.
           </p>
           <p>
-            Users can explore heatmaps, graphs, and bivariate maps, 
-            interactively overlay datasets, and identify patterns such as:  
+            Users can explore heatmaps, graphs, and bivariate maps; overlay datasets; and
+            probe questions such as: 
             <em>“Do industrial clusters coincide with deprived districts?”</em> or  
             <em>“Which industries should a district diversify into next?”</em>
           </p>
           <p>
-            The dashboard also features trajectory classification, 
-            diversification recommendations, and night-lights validation.
+            The dashboard includes trajectory classification, diversification suggestions,
+            and night-lights-based validation of emerging clusters.
           </p>
           <p>
-            <a href="https://your-shinyapp-link" target="_blank" rel="noopener">Launch Dashboard</a>
+            <a href="https://your-shinyapp-link" target="_blank" rel="noopener">
+              Launch Dashboard
+            </a>
           </p>
         </article>
-        
+
       </div>
     </main>
   </div>
