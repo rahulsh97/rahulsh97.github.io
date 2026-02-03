@@ -226,4 +226,11 @@ main h1, main h2 {
 }
 
 
+.blog-list p {
+  margin: 6px 0 0;
+  font-size: 0.95rem;
+  color: #555;
+  line-height: 1.4;
+}
+
 
