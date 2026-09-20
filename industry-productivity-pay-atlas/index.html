@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Industry Productivity &amp; Pay Atlas — Rahul Shukla</title>
+<meta name="description" content="A reproducible research tool on how much of industrial value added reaches labour, and how much of an aggregate change is within-industry versus between-industry. RBI India KLEMS + OECD STAN."/>
+<link rel="stylesheet" href="styles.css"/>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="masthead">
+  <div class="wrap">
+    <div class="kicker">Industry Productivity &amp; Pay Atlas</div>
+    <h1>When industry productivity changes, how much of value added reaches labour?</h1>
+    <p class="q">And how much of an aggregate change comes from shifts <strong>within</strong> industries rather than shifts <strong>between</strong> them? A reproducible, source-aware look at labour's share of value added — India (RBI KLEMS, 1980–2023) with an OECD comparison.</p>
+    <a class="home" href="../projects.html">&larr; Back to data projects</a>
+  </div>
+</header>
+
+<nav class="tabs" aria-label="Views">
+  <div class="wrap">
+    <button class="tab" id="tab-finding" role="tab" aria-selected="true" aria-controls="view-finding">The finding</button>
+    <button class="tab" id="tab-explore" role="tab" aria-selected="false" aria-controls="view-explore">Explore</button>
+    <span style="flex:1"></span>
+    <button class="act" id="share-btn" title="Copy a link to the current view">Copy link to this view</button>
+  </div>
+</nav>
+
+<main id="main" class="wrap">
+  <!-- ============ THE FINDING ============ -->
+  <section id="view-finding" role="tabpanel" aria-labelledby="tab-finding">
+    <div class="card">
+      <h2>Labour's share of Indian manufacturing value added</h2>
+      <p class="lead" id="finding-lead">Loading the rebuilt RBI KLEMS series…</p>
+      <div class="stat-row" id="finding-stats"></div>
+      <svg class="chart" id="finding-traj" viewBox="0 0 900 340" role="img" aria-label="Manufacturing labour-income share, time series"></svg>
+      <p class="small muted" id="finding-traj-cap"></p>
+    </div>
+
+    <div class="grid-side">
+      <div class="card">
+        <h3>Decompose a change</h3>
+        <p class="small muted">Pick any two years. The aggregate change splits exactly into a <strong>within-industry</strong> part and a <strong>composition</strong> (between-industry) part.</p>
+        <div class="controls" style="flex-direction:column;align-items:stretch">
+          <div class="field"><label for="f-y0">From year</label><select id="f-y0"></select></div>
+          <div class="field"><label for="f-y1">To year</label><select id="f-y1"></select></div>
+        </div>
+        <div class="stat-row" id="decomp-stats" style="margin-top:12px"></div>
+        <p class="small mono" id="decomp-identity"></p>
+        <details class="methods"><summary>Formula &amp; definitions</summary>
+          <p class="def"><strong>S<sub>t</sub> = Σ<sub>i</sub> w<sub>it</sub> · s<sub>it</sub></strong>, where <em>w</em> is each industry's share of nominal manufacturing value added and <em>s</em> is its labour-income share of value added.</p>
+          <p class="def"><strong>ΔS = Σ<sub>i</sub> mean(w<sub>i</sub>)·Δs<sub>i</sub></strong> (within-industry) <strong>+ Σ<sub>i</sub> mean(s<sub>i</sub>)·Δw<sub>i</sub></strong> (composition). Symmetric; the two parts sum exactly to ΔS.</p>
+          <p class="def"><strong>Labour income (RBI KLEMS)</strong> = compensation of employees + the labour part of self-employed mixed income (imputed). It is a <em>broad</em> measure, <strong>not</strong> ASI wages paid to formal workers. This is accounting, <strong>not</strong> a causal explanation.</p>
+        </details>
+      </div>
+      <div class="card">
+        <h3>Signed industry contributions</h3>
+        <p class="small muted" id="contrib-cap"></p>
+        <svg class="chart" id="finding-contrib" viewBox="0 0 900 460" role="img" aria-label="Signed industry contributions to the change"></svg>
+        <div id="contrib-table"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>What the rebuilt data actually supports</h3>
+      <div id="finding-narrative" class="lead"></div>
+      <div class="note warn" id="finding-caveats"></div>
+    </div>
+  </section>
+
+  <!-- ============ EXPLORE ============ -->
+  <section id="view-explore" role="tabpanel" aria-labelledby="tab-explore" hidden>
+    <div class="card">
+      <div class="controls">
+        <div class="field"><label for="e-plane">Data plane</label>
+          <select id="e-plane">
+            <option value="india">India — RBI KLEMS (broad labour-income share)</option>
+            <option value="oecd">Global — OECD STAN (employee-compensation share)</option>
+          </select>
+        </div>
+        <div class="field" id="wrap-country" hidden><label for="e-country">Country</label><select id="e-country"></select></div>
+        <div class="field"><label for="e-industry" id="lab-industry">Industry</label><select id="e-industry"></select></div>
+        <div class="field"><label for="e-metric">Measure</label><select id="e-metric"></select></div>
+        <button class="act" id="e-download">Download plotted data (CSV)</button>
+      </div>
+      <div id="plane-note" class="note small" style="margin-top:12px"></div>
+    </div>
+
+    <div class="grid2">
+      <div class="card">
+        <h3 id="e-chart-title">Time series</h3>
+        <svg class="chart" id="e-series" viewBox="0 0 900 360" role="img" aria-label="Selected time series"></svg>
+        <div class="legend" id="e-legend"></div>
+        <p class="small muted" id="e-units"></p>
+      </div>
+      <div class="card">
+        <h3>Definitions at the point of comparison</h3>
+        <div id="e-defs"></div>
+        <div id="e-table"></div>
+      </div>
+    </div>
+  </section>
+
+  <div class="card">
+    <details class="methods" id="methods-panel">
+      <summary>Methods, sources, licences &amp; limitations</summary>
+      <div id="methods-body"></div>
+    </details>
+  </div>
+</main>
+
+<footer class="foot"><div class="wrap">
+  <div id="foot-src"></div>
+  <p>Rahul Shukla · a reproducible research tool. Descriptive accounting, not causal identification. <a href="../projects.html">Data projects</a></p>
+</div></footer>
+
+<div class="tooltip" id="tt" role="status" aria-live="polite"></div>
+<script src="app.js"></script>
+</body>
+</html>
