@@ -11,7 +11,7 @@ const fmtPct = v => (v == null || isNaN(v)) ? "—" : (100 * v).toFixed(1) + "%"
 const fmtPP = v => (v >= 0 ? "+" : "") + (100 * v).toFixed(2) + " pp";
 const fmtNum = (v, d = 1) => (v == null || isNaN(v)) ? "—" : Number(v).toLocaleString("en-IN", { maximumFractionDigits: d });
 
-let KLEMS = null, OECD = null;
+let KLEMS = null, OECD = null, UNIDO = null;
 const state = { view: "finding", y0: "2011-12", y1: "2022-23", plane: "india", country: "DEU", industry: "AGG", metric: "share" };
 
 /* ---------- data helpers (India) ---------- */
@@ -105,7 +105,7 @@ function renderFinding() {
   lineChart($("#finding-traj"), [{ name: "Manufacturing labour-income share", color: COL.accent, points: S.map((v, j) => ({ x: j, y: 100 * v })) }],
     { yfmt: v => v.toFixed(0) + "%", xfmt: j => yrs[j] ? yrs[j].slice(0, 4) : "", xlab: j => yrs[j], tipfmt: v => v.toFixed(1) + "%",
       markers: [{ x: yrIndex(state.y0), label: state.y0 }, { x: yrIndex(state.y1), label: state.y1 }] });
-  $("#finding-traj-cap").textContent = `Source: ${KLEMS.meta.source}. VA-weighted broad labour-income share (incl. imputed self-employed labour), constant ${KLEMS.meta.base_year}. Not the ASI formal wage share.`;
+  $("#finding-traj-cap").textContent = `Source: ${KLEMS.meta.source}. Aggregate = labour income's share of value added, weighted by each industry's NOMINAL value added (the share is a within-year ratio). Labour-productivity series (in Explore) are in constant ${KLEMS.meta.base_year} prices. Broad labour income incl. imputed self-employed; not the ASI formal wage share.`;
   renderDecomp();
 }
 const stat = (n, l, cls = "") => `<div class="stat ${cls}"><div class="n">${n}</div><div class="l">${l}</div></div>`;
@@ -152,24 +152,50 @@ function setupExplore() {
   buildExploreControls();
 }
 function opt(v, t, sel) { return `<option value="${v}"${v===sel?" selected":""}>${t}</option>`; }
+// Valid (industry, metric) options per plane. normalizeSelection() is the single
+// source of truth: it coerces state to a legal selection for the current plane
+// BEFORE any control build or series calc, so the visible option, chart, units,
+// table and CSV can never disagree (fixes plane-switch / shared-URL mismatch).
+function globalDS(plane) { return plane === "unido" ? UNIDO : OECD; }
+function planeMetrics(plane) {
+  if (plane === "india") return [["share","Labour-income share of VA"],["lp","Real labour productivity (VA/worker)"],["inc","Labour income per worker (share × productivity)"]];
+  if (plane === "unido") return [["ws","Wages & salaries ÷ VA"],["vae","Value added per employee (US$, nominal)"]];
+  return [["comp","Employee compensation ÷ VA"],["wage","Wages & salaries ÷ VA"]];
+}
+function planeIndustries(plane) {
+  if (plane === "india") return ["AGG", ...mfg().map(z => z.code)];
+  const ds = globalDS(plane);
+  return ds ? ds.activities.map(a => a.code) : [];
+}
+function normalizeSelection() {
+  if (!["india","oecd","unido"].includes(state.plane)) state.plane = "india";
+  const metrics = planeMetrics(state.plane).map(m => m[0]);
+  if (!metrics.includes(state.metric)) state.metric = metrics[0];
+  const inds = planeIndustries(state.plane);
+  if (!inds.includes(state.industry)) state.industry = inds[0];
+  if (state.plane !== "india") {            // country only applies to global planes
+    const ds = globalDS(state.plane);
+    const codes = ds ? ds.countries.map(c => c.code) : [];
+    if (!codes.includes(state.country)) state.country = codes[0];
+  }
+}
 function buildExploreControls() {
+  normalizeSelection();
   const isI = state.plane === "india";
   $("#wrap-country").hidden = isI;
   $("#lab-industry").textContent = isI ? "Industry" : "Industry (ISIC)";
   if (isI) {
     $("#e-industry").innerHTML = opt("AGG","All manufacturing (aggregate)",state.industry) +
       mfg().map(z => opt(z.code, z.name, state.industry)).join("");
-    $("#e-metric").innerHTML = [["share","Labour-income share of VA"],["lp","Real labour productivity (VA/worker)"],["inc","Labour income per worker (share × productivity)"]]
-      .map(m => opt(m[0], m[1], state.metric)).join("");
-    if (![...$("#e-industry").options].some(o=>o.value===state.industry)) state.industry="AGG";
   } else {
-    $("#e-country").innerHTML = OECD.countries.map(c => opt(c.code, c.name, state.country)).join("");
-    $("#e-industry").innerHTML = OECD.activities.map(a => opt(a.code, a.name, state.industry)).join("");
-    $("#e-metric").innerHTML = [["comp","Employee compensation ÷ VA"],["wage","Wages & salaries ÷ VA"]].map(m=>opt(m[0],m[1],state.metric)).join("");
-    if (!OECD.activities.some(a=>a.code===state.industry)) state.industry = "C";
-    if (!["comp","wage"].includes(state.metric)) state.metric = "comp";
-    $("#e-metric").value = state.metric; $("#e-industry").value = state.industry;
+    const ds = globalDS(state.plane);
+    $("#e-country").innerHTML = ds.countries.map(c => opt(c.code, c.name, state.country)).join("");
+    $("#e-industry").innerHTML = ds.activities.map(a => opt(a.code, a.name, state.industry)).join("");
   }
+  $("#e-metric").innerHTML = planeMetrics(state.plane).map(m => opt(m[0], m[1], state.metric)).join("");
+  // Set values explicitly so the visible option always equals normalized state.
+  $("#e-industry").value = state.industry; $("#e-metric").value = state.metric;
+  if (!isI) $("#e-country").value = state.country;
 }
 function indiaSeries() {
   const yrs = KLEMS.years; const mlist = mfg();
@@ -214,28 +240,52 @@ function renderExplore() {
     tableFrom(s.yrs.map((y,j)=>[y, s.points[j].y]), ["Year", name], isShare);
     $("#plane-note").className="note small"; $("#plane-note").innerHTML = `<strong>India plane (RBI KLEMS).</strong> Broad labour-income share. Kept separate from the OECD plane — the two use different labour concepts and are not pooled or subtracted.`;
   } else {
-    const rec = OECD.series.find(s=>s.country===state.country && s.activity===state.industry);
-    const cname = OECD.countries.find(c=>c.code===state.country).name;
-    const aname = OECD.activities.find(a=>a.code===state.industry).name;
+    const isU = state.plane === "unido";
+    const ds = isU ? UNIDO : OECD;
+    const rec = ds.series.find(s=>s.country===state.country && s.activity===state.industry);
+    const cname = (ds.countries.find(c=>c.code===state.country)||{}).name || state.country;
+    const aname = (ds.activities.find(a=>a.code===state.industry)||{}).name || state.industry;
     $("#e-chart-title").textContent = `${cname} — ${aname}`;
-    if (!rec || !rec.year.length) {
-      $("#e-series").innerHTML=""; $("#e-series").appendChild(el("text",{x:450,y:180,"text-anchor":"middle",class:"axis-txt"},"No observations for this country × industry."));
-      $("#e-legend").innerHTML=""; $("#e-table")?.replaceChildren(); $("#e-table").innerHTML="<p class='empty'>No observations for this selection.</p>";
+    let key, isPct, legendLabel, unitTxt, colr = COL.accent2;
+    if (isU) {
+      if (state.metric === "vae") { key="va_per_emp_usd"; isPct=false; legendLabel="Value added / employee (current US$, nominal)"; unitTxt="current US$ per employee — NOMINAL, not real productivity"; }
+      else { key="wage_share"; isPct=true; legendLabel="Wages & salaries ÷ VA"; unitTxt="wages & salaries as a share of value added (local currency, within-year ratio)"; }
     } else {
-      const key = state.metric==="comp" ? "comp_share" : "wage_share";
-      const pts = rec.year.map((y,i)=>({x:y,y:rec[key][i]==null?null:100*rec[key][i]}));
-      lineChart($("#e-series"), [{name:aname,color:COL.accent2,points:pts}], {yfmt:v=>v.toFixed(0)+"%",tipfmt:v=>v.toFixed(1)+"%",xfmt:v=>v,xlab:v=>v});
-      $("#e-legend").innerHTML = `<span><i style="background:${COL.accent2}"></i>${state.metric==="comp"?"Compensation":"Wages & salaries"} ÷ VA</span>`;
-      tableFrom(rec.year.map((y,i)=>[y, rec[key][i]]), ["Year", state.metric==="comp"?"Comp/VA":"Wages/VA"], true);
+      key = state.metric==="comp" ? "comp_share" : "wage_share"; isPct=true;
+      legendLabel = state.metric==="comp" ? "Employee compensation ÷ VA" : "Wages & salaries ÷ VA";
+      unitTxt = "share of current-price value added (national currency); unitless ratio";
     }
-    $("#e-units").textContent = `Unit: share of current-price value added. Source: ${OECD.meta.source}.`;
-    $("#e-defs").innerHTML = defBlock([
-      ["Coverage","OECD countries only (no India). ISIC Rev.4 industries."],
-      ["Worker universe","Employees only — compensation of employees EXCLUDES the self-employed."],
-      ["Prices","Share of current-price value added (national currency); unitless ratio."],
-      ["Separateness","Different measurement plane from RBI's broad labour income; do not subtract or pool the levels."]
-    ]);
-    $("#plane-note").className="note small warn"; $("#plane-note").innerHTML = `<strong>Global plane (OECD STAN).</strong> Employee-compensation share — a <em>different</em> labour concept from the India plane. Compare patterns within this source; do not compare levels across planes. India is not in STAN.`;
+    const hasData = rec && rec.year.length && rec[key].some(v=>v!=null);
+    if (!hasData) {
+      $("#e-series").innerHTML=""; $("#e-series").appendChild(el("text",{x:450,y:180,"text-anchor":"middle",class:"axis-txt"},"No observations for this country × industry × measure."));
+      $("#e-legend").innerHTML=""; $("#e-table").innerHTML="<p class='empty'>No observations for this selection.</p>";
+    } else {
+      const pts = rec.year.map((y,i)=>({x:y,y: rec[key][i]==null?null:(isPct?100*rec[key][i]:rec[key][i])}));
+      lineChart($("#e-series"), [{name:aname,color:colr,points:pts}],
+        {yfmt:v=>isPct?v.toFixed(0)+"%":fmtNum(v,0), tipfmt:v=>isPct?v.toFixed(1)+"%":fmtNum(v,0), xfmt:v=>v, xlab:v=>v});
+      $("#e-legend").innerHTML = `<span><i style="background:${colr}"></i>${legendLabel}</span>`;
+      tableFrom(rec.year.map((y,i)=>[y, rec[key][i]]), ["Year", legendLabel], isPct);
+    }
+    $("#e-units").textContent = `Unit: ${unitTxt}. Source: ${ds.meta.source}.`;
+    if (isU) {
+      const valn = (rec && UNIDO.meta.valuation_labels[rec.va_val]) || "valuation varies";
+      $("#e-defs").innerHTML = defBlock([
+        ["Coverage", `${UNIDO.meta.coverage} Years 1991–2023 where reported.`],
+        ["Worker universe","Employees (variable 04). Wages & salaries = variable 05; value added = variable 20."],
+        ["Valuation", `This country–industry reports value added at <strong>${valn}</strong>. Valuation differs by country, so cross-country <em>levels</em> aren't comparable; the wages/VA ratio cancels it within a country-year.`],
+        ["Prices","NOMINAL (current prices). VA per employee reflects prices, not real output per worker."],
+        ["Separateness","Separate plane from RBI KLEMS and OECD STAN — different labour concepts; never pooled or subtracted."]
+      ]);
+      $("#plane-note").className="note small warn"; $("#plane-note").innerHTML = `<strong>Global plane (UNIDO INDSTAT Rev.4).</strong> Industrial <em>wages &amp; salaries</em> share of value added and nominal VA/employee. A different labour concept again; compare patterns within this source only. Attribution: UNIDO (CC BY 4.0).`;
+    } else {
+      $("#e-defs").innerHTML = defBlock([
+        ["Coverage","OECD countries only (no India). ISIC Rev.4 industries."],
+        ["Worker universe","Employees only — compensation of employees EXCLUDES the self-employed."],
+        ["Prices","Share of current-price value added (national currency); unitless ratio."],
+        ["Separateness","Different measurement plane from RBI's broad labour income; do not subtract or pool the levels."]
+      ]);
+      $("#plane-note").className="note small warn"; $("#plane-note").innerHTML = `<strong>Global plane (OECD STAN).</strong> Employee-compensation share — a <em>different</em> labour concept from the India plane. Compare patterns within this source; do not compare levels across planes. India is not in STAN.`;
+    }
   }
 }
 function defBlock(pairs){ return pairs.map(p=>`<p class="def"><strong>${p[0]}:</strong> ${p[1]}</p>`).join(""); }
@@ -248,9 +298,12 @@ function downloadCSV(){
   let rows, name;
   if (state.plane==="india"){ const s=indiaSeries(); name=`atlas_india_${state.industry}_${state.metric}.csv`;
     rows=[["year","value","metric","industry","source"]].concat(s.yrs.map((y,j)=>[y, s.points[j].y??"", state.metric, state.industry, "RBI India KLEMS 2024"]));
-  } else { const rec=OECD.series.find(s=>s.country===state.country&&s.activity===state.industry); const key=state.metric==="comp"?"comp_share":"wage_share";
-    name=`atlas_oecd_${state.country}_${state.industry}_${state.metric}.csv`;
-    rows=[["year","value","metric","country","activity","source"]].concat(rec?rec.year.map((y,i)=>[y, rec[key][i]??"", state.metric, state.country, state.industry, "OECD STAN 2025"]):[]);
+  } else { const isU=state.plane==="unido"; const ds=globalDS(state.plane);
+    const rec=ds.series.find(s=>s.country===state.country&&s.activity===state.industry);
+    const key = isU ? (state.metric==="vae"?"va_per_emp_usd":"wage_share") : (state.metric==="comp"?"comp_share":"wage_share");
+    const src = isU ? "UNIDO INDSTAT Rev.4 (2024)" : "OECD STAN 2025";
+    name=`atlas_${state.plane}_${state.country}_${state.industry}_${state.metric}.csv`;
+    rows=[["year","value","metric","country","activity","source"]].concat(rec?rec.year.map((y,i)=>[y, rec[key][i]??"", state.metric, state.country, state.industry, src]):[]);
   }
   const csv=rows.map(r=>r.join(",")).join("\n"); const blob=new Blob([csv],{type:"text/csv"});
   const a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download=name; a.click(); URL.revokeObjectURL(a.href);
@@ -264,7 +317,7 @@ function switchView(v){ state.view=v;
 function sync(){ const p=new URLSearchParams();
   p.set("view",state.view);
   if(state.view==="finding"){ p.set("y0",state.y0); p.set("y1",state.y1); }
-  else { p.set("plane",state.plane); if(state.plane==="oecd")p.set("country",state.country); p.set("industry",state.industry); p.set("metric",state.metric); }
+  else { p.set("plane",state.plane); if(state.plane!=="india")p.set("country",state.country); p.set("industry",state.industry); p.set("metric",state.metric); }
   history.replaceState(null,"","?"+p.toString());
 }
 function loadState(){ const p=new URLSearchParams(location.search);
@@ -285,19 +338,24 @@ function buildMethods(){
      <p class="def">${OECD.meta.source}. ${OECD.meta.coverage_note}</p>
      <p class="def">Measures: compensation of employees ÷ VA, and wages &amp; salaries ÷ VA, current prices. ${OECD.meta.separateness}</p>
      <p class="def"><strong>Licence:</strong> ${OECD.meta.licence}</p>
-     <h3>UNIDO INDSTAT — attempted, not shipped</h3>
-     <p class="def">UNIDO INDSTAT (industrial wages-and-salaries share) was the intended first global route, but stat.unido.org returned HTTP 403 to scripted access and its bulk download requires registration; access controls were not bypassed. It can be added later from a user-supplied CC BY 4.0 extract as a third, separate plane.</p>
+     <h3>Global plane — UNIDO INDSTAT Rev.4</h3>
+     <p class="def">${UNIDO.meta.source} · downloaded ${UNIDO.meta.download_date} · data.csv sha256 <span class="mono small">${UNIDO.meta.data_csv_sha256.slice(0,24)}…</span></p>
+     <p class="def">${UNIDO.meta.variables} Measures: wages &amp; salaries ÷ VA (local currency, within-year ratio) and VA per employee (current US$, nominal). ${UNIDO.meta.coverage}</p>
+     <p class="def">${UNIDO.meta.valuation_note}</p>
+     <p class="def">${UNIDO.meta.nominal_note} ${UNIDO.meta.separateness}</p>
+     <p class="def"><strong>Licence:</strong> ${UNIDO.meta.licence}</p>
      <h3>Reproducibility &amp; limitations</h3>
      <p class="def">Offline builds: <span class="mono">build/build_atlas.R</span> (India), <span class="mono">build/build_oecd.py</span> (OECD). Tests: <span class="mono">build/test_atlas.R</span>. The within/composition split is a descriptive accounting identity, not causal. The three planes use different labour concepts and are never subtracted or pooled.</p>`;
-  $("#foot-src").innerHTML = `Sources: RBI India KLEMS (2024); OECD STAN (2025). Derived aggregates shown with attribution; raw workbooks not redistributed.`;
+  $("#foot-src").innerHTML = `Sources: RBI India KLEMS (2024); OECD STAN (2025); UNIDO INDSTAT Rev.4 (2024, CC BY 4.0). Derived aggregates shown with attribution; raw workbooks/extracts not redistributed.`;
 }
 
 /* ---------- boot ---------- */
 Promise.all([
   fetch("data/atlas_klems.json").then(r=>r.json()),
-  fetch("data/atlas_oecd.json").then(r=>r.json())
-]).then(([k,o])=>{
-  KLEMS=k; OECD=o; loadState();
+  fetch("data/atlas_oecd.json").then(r=>r.json()),
+  fetch("data/atlas_unido.json").then(r=>r.json())
+]).then(([k,o,u])=>{
+  KLEMS=k; OECD=o; UNIDO=u; loadState();
   // year selectors
   const ysel = KLEMS.years.map(y=>`<option value="${y}">${y}</option>`).join("");
   $("#f-y0").innerHTML=ysel; $("#f-y1").innerHTML=ysel;

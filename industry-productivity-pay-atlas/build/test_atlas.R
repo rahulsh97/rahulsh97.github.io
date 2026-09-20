@@ -13,6 +13,7 @@ K <- fromJSON("data/atlas_klems.json", simplifyDataFrame = FALSE)
 ind <- K$industries; yrs <- unlist(K$years)
 ok(length(ind) == 27, "India JSON has 27 industries")
 ok(length(yrs) == 43 && yrs[1] == "1980-81" && yrs[43] == "2022-23", "years 1980-81..2022-23")
+ok(!any(grepl("--", yrs)), "no stray double-hyphen year labels (e.g. 1997--98)")
 is_mfg <- vapply(ind, function(z) isTRUE(z$is_mfg), logical(1))
 ok(sum(is_mfg) == 13, "manufacturing = 13 industries")
 

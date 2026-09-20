@@ -38,11 +38,13 @@ LP  <- read_var("LP")      # Labour productivity (real VA per person, '000 Rs, 2
 LSH <- read_var("LSH_va")  # Labour income share in value added (ratio)
 EMP <- read_var("EMP")     # Persons employed ('000)
 
-years <- VA$years
-stopifnot(identical(years, VAr$years), identical(years, LP$years),
-          identical(years, LSH$years), identical(years, EMP$years))
+stopifnot(identical(VA$years, VAr$years), identical(VA$years, LP$years),
+          identical(VA$years, LSH$years), identical(VA$years, EMP$years))
+# Normalise stray double-hyphen year labels from the workbook (e.g. "1997--98"
+# -> "1997-98"). Display labels only; no economic values are touched.
+years <- gsub("-{2,}", "-", VA$years)
 n <- length(VA$code)
-stopifnot(n == 27L, length(years) == 43L)
+stopifnot(n == 27L, length(years) == 43L, !any(grepl("--", years)))
 
 industries <- lapply(seq_len(n), function(i) {
   list(
