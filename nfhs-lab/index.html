@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Explore how district health and household conditions changed between NFHS-4 and NFHS-5. An interactive research preview by Rahul Shukla.">
+  <title>District Change Lab | Rahul Shukla</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to research tool</a>
+  <header class="site-header"><a href="../index.html" class="brand">Rahul Shukla <span>/ data tools</span></a><a class="back" href="../projects.html">← All projects</a></header>
+  <main id="main">
+    <section class="hero wrap">
+      <div><p class="eyebrow">NFHS 4 → 5 · DISTRICT RESEARCH PREVIEW</p><h1>India's health gains<br><em>are not uniform.</em></h1><p class="lead">Explore where household conditions and health outcomes changed together across Indian districts. Select a question, inspect the exceptions, and test how the association shifts within states.</p><div class="hero-actions"><a href="#explore" class="button primary">Explore the evidence ↗</a><a href="#method" class="button light">Read the methods</a></div></div>
+      <aside class="hero-note"><div class="slash">↗</div><strong>341</strong><span>districts transcribed</span><hr><strong>262</strong><span>with a matched two-round pair for the opening question</span><p>21 states/UTs in the source; 20 contribute a matched pair to the opening question. This is not a national district panel.</p></aside>
+    </section>
+    <section id="explore" class="workspace wrap" aria-labelledby="explore-title">
+      <div class="section-heading"><div><p class="eyebrow">01 / THE QUESTION</p><h2 id="explore-title">What changed together?</h2></div><p>Each dot is a district. A change is NFHS-5 minus NFHS-4, in percentage points.</p></div>
+      <div class="controls">
+        <label>Health outcome<select id="outcome"><option value="stunting">Child stunting</option><option value="underweight">Child underweight</option><option value="child_anaemia">Child anaemia</option><option value="women_anaemia">Women's anaemia</option><option value="births">Institutional births</option><option value="antenatal">Four or more antenatal visits</option></select></label>
+        <label>Compare with<select id="exposure"><option value="sanitation">Improved sanitation</option><option value="fuel">Clean cooking fuel</option><option value="schooling">Women's 10+ years of schooling</option><option value="antenatal">Four or more antenatal visits</option><option value="births">Institutional births</option></select></label>
+        <label>View<select id="mode"><option value="change">Change across rounds</option><option value="level">NFHS-5 level</option></select></label>
+        <label>State filter<select id="state"><option value="all">All available states</option></select></label>
+      </div>
+      <div class="question" id="question" aria-live="polite"></div>
+      <div class="stats" aria-live="polite"><div><span>Matched districts</span><strong id="count">—</strong><small id="coverage">—</small></div><div><span id="median-title">Median outcome change</span><strong id="median">—</strong><small id="median-caption">NFHS-5 − NFHS-4</small></div><div><span>District association</span><strong id="slope">—</strong><small id="slope-caption">Percentage-point change in outcome per 10 pp change in comparison indicator</small></div><div><span>Influence check</span><strong id="influence">—</strong><small id="influence-caption">Leave one state out</small></div></div>
+      <div class="figures">
+        <section class="panel" aria-labelledby="scatter-title"><div class="panel-heading"><div><p class="eyebrow">02 / ASSOCIATION</p><h3 id="scatter-title">The district relationship</h3></div><span class="pill" id="model-label">District regression</span></div><div class="plot" id="scatter" role="img" aria-label="Interactive scatterplot of district outcomes and comparison indicator"></div><div class="plot-footer"><span id="scatter-foot">—</span><button id="fe" type="button" aria-pressed="false">Account for state</button></div></section>
+        <section class="panel" aria-labelledby="matrix-title"><div class="panel-heading"><div><p class="eyebrow">03 / GEOGRAPHY</p><h3 id="matrix-title">District change matrix</h3></div><span class="pill" id="matrix-caption">NFHS-4 → 5</span></div><div class="matrix" id="matrix" aria-label="Colour-coded district values grouped by state"></div><div class="legend"><span id="legend-left">Fell</span><div class="gradient"></div><span id="legend-right">Rose</span></div><p class="caption">Each tile is one district, grouped by state; this is a matrix, not a geographic boundary map. Grey means the value is unavailable.</p></section>
+      </div>
+      <div class="lower"><section class="panel" aria-labelledby="ranking-title"><div class="panel-heading"><div><p class="eyebrow">04 / THE EXCEPTIONS</p><h3 id="ranking-title">Inspect a district</h3></div><label class="search"><span class="sr-only">Search districts</span><input id="search" placeholder="Search district…" type="search"></label></div><div id="ranking" class="ranking"></div></section><section class="panel inspect" aria-labelledby="selection-title"><p class="eyebrow">SELECTED DISTRICT</p><h3 id="selection-title">Choose a dot or tile</h3><div id="detail">See both rounds and the source behind the plotted point.</div><button id="export" class="button export" type="button">Download plotted observations (.csv) ↓</button></section></div>
+    </section>
+    <section id="method" class="methods"><div class="wrap methods-grid"><div><p class="eyebrow">05 / READ BEFORE INTERPRETING</p><h2>Useful exploration.<br><em>Careful inference.</em></h2></div><div><p><strong>Coverage.</strong> NFHS-4 (2015–16) and NFHS-5 (2019–21) values come from published district fact sheets via a third-party transcription covering <strong>341 districts in 21 states/UTs</strong>. For the opening comparison, only 262 have values in both rounds. This is not all 707 NFHS-5 districts.</p><p><strong>Regression.</strong> The solid line is ordinary least squares across district averages. “Account for state” compares districts within each state by removing state means. Coefficients show the change in the outcome associated with a 10-percentage-point change in the selected comparison indicator. No individual data, survey weights, sample-size precision or causal identification are available in this compilation. State-level correlation and changing district boundaries may affect the result. No standard errors or significance claims are shown.</p><p><strong>Validation status.</strong> The compiler says its district transcription received minimal quality checks. This preview performs schema, range, completeness and missing-value checks but <strong>has not reconciled each district value against the original PDF</strong>. Treat estimates and apparent outliers as candidates for verification, not definitive findings. NFHS-6 will be added only once district-level comparability and values are checked.</p><p class="sources">Source: <a href="https://github.com/pratapvardhan/NFHS-5">Bhanu K Pratap Vardhan, NFHS-5 district compilation</a> (CC BY 4.0), transcribed from <a href="https://www.nfhsiips.in/">MoHFW/IIPS NFHS fact sheets</a>. <a href="https://microdata.worldbank.org/index.php/catalog/4482">NFHS-5 survey and sampling documentation</a>. <a href="README.md">Data build, licensing and limitations</a>.</p></div></div></section>
+  </main>
+  <footer><div class="wrap">© Rahul Shukla · Research preview · <a href="../index.html">Portfolio</a> · <a href="https://github.com/rahulsh97/rahulsh97.github.io">Source code</a></div></footer>
+</body>
+</html>
