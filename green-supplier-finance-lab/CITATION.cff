@@ -1,0 +1,42 @@
+cff-version: 1.2.0
+message: "If you use this research preview, please cite it as below."
+title: "Green Supplier Finance Lab"
+abstract: >-
+  A multi-country, multi-industry browser research preview. For a chosen buyer
+  economy and industry it traces first-tier foreign supplier sectors from
+  published OECD accounts (Inter-Country Input-Output 2025, 2022 table; GHG
+  Footprints production-based emissions, 2022), allocates supplier-sector
+  emissions and value added in proportion to the buyer's purchases, and lets the
+  user test hypothetical decarbonisation-financing scenarios. Published accounts,
+  modelled allocation and assumed financing are kept visibly distinct. It is not
+  a firm-level carbon inventory, a credit assessment, a causal model or an
+  investment recommendation.
+type: software
+authors:
+  - family-names: Shukla
+    given-names: Rahul
+    roles: ["Concept", "Research design", "Interpretation"]
+repository-code: "https://github.com/rahulsh97/rahulsh97.github.io"
+url: "https://rahulsh97.github.io/green-supplier-finance-lab/"
+version: "2.0.0"
+date-released: "2026-09-21"
+keywords:
+  - global value chains
+  - green finance
+  - input-output
+  - production emissions
+  - OECD ICIO
+  - Scope 3 screening
+references:
+  - type: data
+    title: "OECD Inter-Country Input-Output (ICIO) Tables, 2025 release, 2022 table"
+    url: "https://www.oecd.org/en/data/datasets/inter-country-input-output-tables.html"
+    notes: "Source of published intermediate-input, gross-output and value-added accounts. OECD is the source of the underlying accounts."
+  - type: data
+    title: "OECD Greenhouse Gas Footprints, production-based emissions (PROD_GHG), 2022"
+    url: "https://www.oecd.org/en/data/datasets/greenhouse-gas-footprint-indicators.html"
+    notes: "Source of production-based sector emissions."
+notes: >-
+  Engineering assistance: OpenAI Codex and Anthropic Claude Code. These tools
+  provided software/engineering assistance and are not authors. OECD retains all
+  rights in the underlying data; see NOTICE.md.

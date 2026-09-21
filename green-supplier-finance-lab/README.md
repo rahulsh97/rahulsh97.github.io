@@ -1,43 +1,138 @@
-# Who Pays to Green the Supply Chain?
+# Green Supplier Finance Lab
 
-A [browser research preview](https://rahulsh97.github.io/green-supplier-finance-lab/) for examining **published first-tier input accounts**, allocated direct production emissions and **hypothetical financing burden**. Its first real-data case is Germany's motor-vehicle industry (`DEU_C29`) in **2022**, from an OECD ICIO 2025 table and the 2022 production-emissions series in the OECD GHG Footprints MAIN extract.
+A multi-country, multi-industry [browser research preview](https://rahulsh97.github.io/green-supplier-finance-lab/).
+Pick a **buyer economy** and **buyer industry**; the tool traces that industry's
+first-tier **foreign** supplier sectors from published OECD accounts, allocates
+supplier-sector production emissions and value added in proportion to the buyer's
+purchases, and lets you test a hypothetical decarbonisation-financing scenario.
+
+**Concept, research design and interpretation: Rahul Shukla. Engineering
+assistance: OpenAI Codex and Anthropic Claude Code.** See [`NOTICE.md`](NOTICE.md)
+and [`CITATION.cff`](CITATION.cff).
 
 ## Research question
 
-If a buyer asks upstream suppliers to reduce emissions, which supplier sectors carry the largest exposure, and how does an assumed buyer-funded share change the **illustrative** investment burden? The contribution is an auditable bridge between production accounts and finance design, **not** a claim that upgrade costs, lending, supplier contracts or impacts are observed.
+When a buyer industry asks its suppliers to reduce emissions, **where might the
+investment burden fall, and how would buyer financial support change that
+burden?** The interface keeps three kinds of numbers visibly distinct and never
+implies that supplier contracts, loans, firm emissions, upgrade costs, financial
+distress or causal effects are observed:
 
-## Data route
+1. **Published account** — OECD intermediate-input purchases, gross output, value
+   added and production-based emissions by sector, 2022.
+2. **Modelled allocation** — supplier-sector emissions and value added scaled by
+   the buyer's share of that sector's gross output (first-tier, proportional).
+3. **Assumed financing** — a user-set reduction target, cost per tonne and
+   buyer-funded share.
 
-1. The original [OECD ICIO 2025 regular tables](https://www.oecd.org/en/data/datasets/inter-country-input-output-tables.html) contain `2022_SML.csv`. The supplied compact handoff extracted the `DEU_C29` buyer column, each supplier's output and value added, and a manifest with the source ZIP checksum.
-2. [OECD GHG Footprint Indicators](https://www.oecd.org/en/data/datasets/greenhouse-gas-footprint-indicators.html), **MAIN extract**, provide `PROD_GHG` production emissions in 2022 by country and industry. The handoff matched these observations by exact code; the older `DF_MAIN_csv.zip` ends in 2020 and was not used. `Mt CO₂e` is converted to tonnes in the case builder.
-3. The handoff ZIP is under `inputs/`; `scripts/build_from_handoff.py` independently recalculates first-tier allocations from its CSV and checks its manifest totals. It carries source archive hashes. The 32 GB source archive is **not** bundled here. Review [OECD data terms](https://www.oecd.org/en/about/terms-conditions.html) and dataset metadata for special restrictions before republishing.
+## Coverage
 
-```bash
-python scripts/build_from_handoff.py inputs/green-finance-oecd-handoff.zip --out data/case.json
-python -m http.server 8080
+**3,926 buyer cases** across **81 economies × 50 industries** (2022). Every buyer
+economy × industry with at least one usable matched foreign supplier link is
+published; buyers with zero matched foreign links (124, e.g. households `T`) are
+listed under `omitted` in the manifest, never silently dropped.
+
+## Sources (2022, matched vintages)
+
+- **OECD ICIO 2025 Regular**, 2022 table — `ICIO/2025/Regular/2016-2022_SML.zip → 2022_SML.csv`.
+  Intermediate inputs, gross output, value added.
+  <https://www.oecd.org/en/data/datasets/inter-country-input-output-tables.html>
+- **OECD GHG Footprints MAIN** — `GHG Datasets/MAIN_csv.zip → DF_MAIN.csv`,
+  measure `PROD_GHG`, year **2022**. (The older `DF_MAIN_csv.zip` ends in 2020
+  and is **not** used.)
+  <https://www.oecd.org/en/data/datasets/greenhouse-gas-footprint-indicators.html>
+- **Official labels** — OECD ICIO 2025 `ReadMe_ICIO_small.xlsx` (country and
+  sector names, ISIC Rev.4). No sector description is invented.
+
+Source ZIP and CSV **SHA-256** checksums are recorded in `data/manifest.json`.
+The raw OECD archives are **not** committed; OECD remains the source of, and
+rights-holder in, the underlying accounts.
+
+## Method
+
+For a foreign supplier sector *i* and buyer sector *b* in 2022, with intermediate
+purchases `Zᵢᵦ`, supplier gross output `Xᵢ`, producer direct emissions `Eᵢ`
+(tonnes CO₂e) and supplier value added `VAᵢ`:
+
+```
+allocated_direct_emissions = Eᵢ × Zᵢᵦ / Xᵢ
+allocated_value_added      = VAᵢ × Zᵢᵦ / Xᵢ
+hypothetical_investment    = allocated_direct_emissions × target_reduction × assumed_cost_per_tonne
+minimum_buyer_share        = clamp(1 − ceiling × allocated_VA / investment, 0, 1)
 ```
 
-Open `http://localhost:8080/`. `data/case.json` loads automatically; the file picker accepts other validated cases. The alternative `scripts/build_case.py` can read the original ICIO CSV and a separately prepared emissions CSV if you have the large source files locally.
+Domestic suppliers are excluded (a cross-border first-tier question). Emissions
+are matched to ICIO codes **exactly**; where ICIO is finer than the GHG taxonomy
+(e.g. `C24A`/`C24B`/`C302T309`) the link has no exact emissions twin and is
+**preserved as an excluded observation with a reason, never assigned zero**. This
+is first-tier proportional allocation only — no Leontief inverse, no all-tier
+embodied footprint, and not a measured Scope 3 inventory.
 
-### The first case, audited against the supplied handoff
+## Verified anchors
 
-The original handoff has **3,746** positive supplier-sector rows, including **48 domestic** German links. For this deliberately cross-border case, **3,698** foreign links represent **$93,951.5 million** of inputs. **3,419** links have usable direct GHG and nonnegative value added, covering **$81,572.4 million or 86.8% of foreign input value**. The **279 excluded** foreign links are 277 without an exact GHG sector match and two with negative supplier value added; their **$12,379.1 million** of inputs are reported separately, never assigned zero emissions. Of the usable links, the proportional model allocates **4.145 million tonnes CO₂e** and **$25,236.7 million** of supplier value added to this buyer's input purchases. These are constructed first-tier allocations, **not independently measured buyer footprints**. The 2022 year, ICIO/GHG releases, source ZIP checksums and handoff checksum are in `data/case.json`.
+Independently reproduced from the OECD source and checked against the committed data:
 
-## Method and boundaries
+| Buyer | Matched foreign links | Excluded | Foreign-input coverage | Allocated emissions | Allocated VA |
+|---|---:|---:|---:|---:|---:|
+| **DEU_C29** Germany · motor vehicles | 3,419 | 279 | 86.8% | 4.145 Mt CO₂e | $25,236.7 m |
+| **FRA_C29** France · motor vehicles | 3,249 | 276 | 89.0% | 1.098 Mt CO₂e | $7,351.1 m |
 
-For foreign supplier sector *i* and buyer sector *b*, let `Zᵢᵦ` denote **intermediate input purchases** (USD million), `Xᵢ` supplier-sector output, `Eᵢ` producer direct GHG (tonnes CO₂e), and `VAᵢ` supplier-sector value added (USD million).
+Raw-cell spot checks (straight from `2022_SML.csv` + `DF_MAIN.csv`) confirm the
+allocation, e.g. `DEU_C29 ← CHN_C20`: Z = 509.5116, OUT = 1,649,082.9,
+GHG(CHN,C20) = 635.771 Mt → allocated = 196,432.0 t; and the excluded
+`DEU_C29 ← CHN_C24A` (no exact GHG twin) is preserved, not zeroed.
 
-`allocated_direct_ghgᵢᵦ = Eᵢ × Zᵢᵦ / Xᵢ` and `allocated_vaᵢᵦ = VAᵢ × Zᵢᵦ / Xᵢ`. The allocation assumes uniform emissions and VA per dollar of output across buyers. It covers **first-tier direct supplier production only**: no Leontief inverse, no all-tier embodied footprint, no firm-level Scope 3 inventory. OECD ICIO figures are national-account estimates, not observed firm contracts.
+## Data architecture
 
-The scenario uses a selected reduction `r`, an **assumed** USD/tonne upgrade cost `c` and **assumed** buyer-funded percentage `q`: `hypothetical investment = allocated_direct_ghg × r × c`; buyer and supplier portions equal `q` and `1−q`. Dollars are expressed in millions. For an assumed diagnostic ceiling `T` of supplier burden / allocated annual value added, the reverse calculation solves `minimum buyer share = clamp(1−T×allocated VA/investment, 0, 1)`. This is an accounting stress test, not a cost-effectiveness estimate, credit-risk model or prediction. The burden / allocated VA ratio compares a one-time cost with annual VA and must not be interpreted as profitability or cash-flow capacity.
+- `data/manifest.json` — small, uncompressed: official labels, per-economy
+  available industries, provenance/checksums, inclusion rule and `omitted` list.
+- `data/cases/<ECONOMY>_<IND>.json.gz` — one lazily loaded, gzip-compressed,
+  columnar case per buyer (matched links, excluded links with reasons, and exact
+  full-case totals kept separate from any displayed top-link subset). The app
+  detects whether the response is actually gzip before applying
+  `DecompressionStream`, and falls back to plain JSON.
 
-The app shows input-value coverage and excludes unmatched supplier sectors from its estimated totals. It never calls excluded cells zero. It does not merge other releases, use UNIDO industry accounts as if they were ICIO inputs, or assert that OECD emissions data observes financing. For example, ICIO's `C24A` and `C24B` do not each receive GHGFP's combined `C24` emissions: that would double count. Such links stay unmatched until a separately justified crosswalk is built. UNIDO or IFC material may become a separately documented later layer once matching and identification justify it.
+Largest case file ≈ 42 KB; total derived data ≈ 82 MB. No individual file exceeds
+90 MB and no raw OECD archive is committed.
 
-## Verification and current gate
+## Build (needs the local OECD source)
 
 ```bash
-python -m unittest discover -s tests -v
-npm test
+python scripts/build_cases.py \
+  --icio-zip ".../ICIO/2025/Regular/2016-2022_SML.zip" \
+  --ghg-zip  ".../GHG Datasets/MAIN_csv.zip" \
+  --readme   ".../ICIO/2025/Regular/ReadMe_ICIO_small.xlsx" \
+  --out data
 ```
 
-The tests check a small accounting fixture, the actual handoff's counts and value-weighted coverage, arithmetic, and the client-side scenario. The original OECD archives are not included, so raw-source checksums and cells are inherited from the handoff manifest; this is a stated provenance limit. Before treating this preview as a research result, independently spot-check an original OECD source cell and review the dataset-specific metadata for additional reuse restrictions. The OECD's [general terms](https://www.oecd.org/en/about/terms-conditions.html) apply alongside dataset-specific conditions. The scenario uses no observed upgrade cost or contract data.
+Requires `openpyxl` for the official labels. The script prints a `DEU_C29`
+self-check (expect 3,419 / 279 / 86.8%). `scripts/validate_case.py` is a
+developer-only validator for a built case file — **visitors never upload data.**
+
+## Tests
+
+```bash
+npm test                 # node core tests + committed-data integrity
+npm run test:reproduce   # reproduce anchors from OECD source (set GSFL_ICIO_ZIP, GSFL_GHG_ZIP)
+```
+
+- `tests/core.test.mjs` — gzip detect/inflate + fallback, selector normalisation,
+  filter/rank, scenario and reverse buyer-share arithmetic, coverage identity,
+  number formatting (never `$0m` for a positive; true zero vs missing), and the
+  dynamic narrative reacting to control changes.
+- `tests/test_data.py` — DEU_C29 and FRA_C29 anchors, manifest integrity, label
+  completeness, exclusion of totals/final demand, missing-never-zero, no private
+  paths committed, no raw archives committed.
+- `tests/test_reproduce.py` — rebuilds the anchors from OECD source when present.
+
+Browser verification (desktop + 375 px mobile): buyer/industry/supplier switching,
+all ranking modes, all scenario sliders, dynamic policy text, code explainer,
+collapsed/expanded evidence, complete download, and zero console errors.
+
+## Positioning
+
+This research preview is intended for policy screening, research exploration and
+teaching. It is **not** a firm-level carbon inventory, a credit assessment, a
+causal model or an investment recommendation. It is a distinctive open research
+tool; no "world first" or "unique" claim is made. OECD retains all rights in the
+underlying data (see [`NOTICE.md`](NOTICE.md)).
