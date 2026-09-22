@@ -1,6 +1,7 @@
 import {
   MEASURES, decodeCaseBuffer, normalizeSelection, filterRank, sum,
   supplierEconomies, scenario, minimumBuyerShare, buildNarrative,
+  attachUpstream, upstreamTotals, rankingsDiffer,
   formatMoney, formatMoneyPrecise, formatTonnes, formatTonnesPrecise, pct,
 } from './core.js';
 
@@ -11,6 +12,8 @@ const setText = (id, v) => { const e = $(id); if (e) e.textContent = v; };
 
 let manifest = null;
 let caseData = null;
+let MULT = null;          // { code: [g, m] } per-sector 2022 multiplier table
+let basis = 'direct';     // exposure lens: 'direct' | 'alltier' (never affects finance)
 let loadingToken = 0;
 
 // ---- URL state ---------------------------------------------------------------
@@ -93,6 +96,7 @@ function render() {
   const supplier = $('supplier').value;
   const measure = $('sort').value;
   const links = filterRank(caseData, supplier, measure);
+  attachUpstream(links, MULT);
   const { reduction, cost, buyerShare, threshold } = currentSliders();
   setText('reductionOut', reduction + '%'); setText('costOut', '$' + cost);
   setText('buyerShareOut', buyerShare + '%'); setText('thresholdOut', threshold + '%');
@@ -119,31 +123,87 @@ function render() {
   setText('supplierCost', formatMoney(investment * (1 - buyerShare / 100)));
   $('buyerBar').style.width = buyerShare + '%'; $('supplierBar').style.width = (100 - buyerShare) + '%';
 
-  // exposure bars — top 9 by allocated emissions
-  const byEmit = [...links].sort((a, b) => b.ghg - a.ghg);
+  // exposure bars — top 9, lens set by the basis toggle (direct or all-tier)
+  const allTierBasis = basis === 'alltier';
+  const emitVal = l => (allTierBasis && l.hasMult ? l.allTier : l.ghg);
+  const byEmit = [...links].sort((a, b) => emitVal(b) - emitVal(a));
   const top = byEmit.slice(0, 9);
-  const max = Math.max(...top.map(l => l.ghg), 1);
+  const max = Math.max(...top.map(emitVal), 1);
   $('bars').replaceChildren(...top.map(l => {
     const row = document.createElement('div'); row.className = 'bar-row';
     const name = document.createElement('span'); name.className = 'name';
     name.textContent = `${economyLabel(l.country)} · ${industryLabel(l.industry)}`;
     name.title = `${l.code} — ${economyLabel(l.country)} · ${industryLabel(l.industry)}`;
     const track = document.createElement('div'); track.className = 'track';
-    const fill = document.createElement('div'); fill.className = 'fill';
-    fill.style.width = (100 * l.ghg / max) + '%'; track.append(fill);
-    const n = document.createElement('b'); n.textContent = formatTonnes(l.ghg);
+    if (allTierBasis && l.hasMult) {
+      const vis = document.createElement('div'); vis.className = 'fill';
+      vis.style.width = (100 * l.ghg / max) + '%';
+      const dp = document.createElement('div'); dp.className = 'fill deep';
+      dp.style.width = (100 * l.deeper / max) + '%';
+      track.append(vis, dp);
+    } else {
+      const fill = document.createElement('div'); fill.className = 'fill';
+      fill.style.width = (100 * l.ghg / max) + '%'; track.append(fill);
+    }
+    const n = document.createElement('b'); n.textContent = formatTonnes(emitVal(l));
     row.append(name, track, n); return row;
   }));
 
+  const up = renderUpstream(links);
+
   // diagnostic
   const need = scen.map((s, i) => minimumBuyerShare(links[i], s.investment, threshold));
-  renderPolicy(links, byEmit, scen, need, { reduction, cost, buyerShare, threshold, investment, supplier });
+  renderPolicy(links, byEmit, scen, need, { reduction, cost, buyerShare, threshold, investment, supplier }, up);
   renderTable(links, scen, need, { threshold });
   updateEvidenceSummary(links.length, supplier);
   writeUrl();
 }
 
-function renderPolicy(links, byEmit, scen, need, s) {
+function renderUpstream(links) {
+  const t = upstreamTotals(links);
+  const has = t.all > 0 && t.covered > 0;
+  setText('upDirect', has ? formatTonnes(t.direct) : '—');
+  setText('upDeeper', has ? formatTonnes(t.deeper) : '—');
+  setText('upAll', has ? formatTonnes(t.all) : '—');
+  setText('upVis', has && t.visibility !== null ? pct(t.visibility) : '—');
+  if (has) {
+    $('upDirect').title = formatTonnesPrecise(t.direct);
+    $('upDeeper').title = formatTonnesPrecise(t.deeper);
+    $('upAll').title = formatTonnesPrecise(t.all);
+  }
+  // stacked bars: leading first-tier channels by all-tier, split visible/deeper
+  const withM = links.filter(l => l.hasMult);
+  const topAll = [...withM].sort((a, b) => b.allTier - a.allTier).slice(0, 8);
+  const max = Math.max(...topAll.map(l => l.allTier), 1);
+  $('upBars').replaceChildren(...topAll.map(l => {
+    const row = document.createElement('div'); row.className = 'bar-row';
+    const name = document.createElement('span'); name.className = 'name';
+    name.textContent = `${economyLabel(l.country)} · ${industryLabel(l.industry)}`;
+    name.title = `${l.code} — ${economyLabel(l.country)} · ${industryLabel(l.industry)}`;
+    const track = document.createElement('div'); track.className = 'track';
+    const vis = document.createElement('div'); vis.className = 'fill';
+    vis.style.width = (100 * l.ghg / max) + '%';
+    const dp = document.createElement('div'); dp.className = 'fill deep';
+    dp.style.width = (100 * l.deeper / max) + '%';
+    track.append(vis, dp);
+    const n = document.createElement('b'); n.textContent = formatTonnes(l.allTier);
+    row.append(name, track, n); return row;
+  }));
+  const diff = rankingsDiffer(links);
+  setText('upNote', !has ? 'No multiplier available for the current selection.'
+    : `${t.covered.toLocaleString('en')} of ${t.total.toLocaleString('en')} links carry an all-tier multiplier`
+      + `${t.missing ? ` (${t.missing} without one, shown as “no data”, never zero)` : ''}. `
+      + `Ranking by direct and by all-tier emissions ${diff ? 'differ' : 'agree'} for the leading link. `
+      + `All-tier levels are modelled estimates; see methods for the 2020 validation and its tolerance.`);
+  if (!has) return null;
+  const top = topAll[0];
+  return {
+    visibility: t.visibility, rankingsDiffer: diff,
+    topAllTier: { name: `${economyLabel(top.country)} · ${industryLabel(top.industry)}`, code: top.code, allTier: top.allTier },
+  };
+}
+
+function renderPolicy(links, byEmit, scen, need, s, up) {
   const supplierScope = s.supplier ? economyLabel(s.supplier) : 'All foreign supplier economies';
   const named = l => ({ name: `${economyLabel(l.country)} · ${industryLabel(l.industry)}`, code: l.code,
                         ghg: l.ghg, input: l.input, va: l.va });
@@ -183,6 +243,7 @@ function renderPolicy(links, byEmit, scen, need, s) {
     buyerShare: s.buyerShare, ceiling: s.threshold, countAbove,
     shareAbove: links.length ? countAbove / links.length : 0,
     mostExposed, minShareMostExposed: minShare,
+    upstream: up,
   };
   const paras = buildNarrative(ctx);
   $('policy').replaceChildren(...paras.map(p => {
@@ -201,7 +262,12 @@ function renderTable(links, scen, need, s) {
     const burden = scen[i].supplier;
     const cells = [
       `${economyLabel(l.country)} · ${industryLabel(l.industry)}`,
-      formatMoney(l.input), formatTonnes(l.ghg), formatMoney(l.va),
+      formatMoney(l.input), formatTonnes(l.ghg),
+      l.hasMult ? formatTonnes(l.deeper) : '—',
+      l.hasMult ? formatTonnes(l.allTier) : '—',
+      l.hasMult && l.visibility !== null ? pct(l.visibility) : '—',
+      l.hasMult ? 'in-network' : 'no multiplier',
+      formatMoney(l.va),
       formatMoney(burden),
       l.va > 0 ? pct(burden / l.va) : (burden > 0 ? '∞' : '—'),
       need[i] === null ? '—' : need[i].toFixed(0) + '%',
@@ -228,6 +294,7 @@ function downloadCsv() {
   if (!caseData) return;
   const supplier = $('supplier').value, measure = $('sort').value;
   const links = filterRank(caseData, supplier, measure);
+  attachUpstream(links, MULT);
   const { reduction, cost, buyerShare, threshold } = currentSliders();
   const meta = [
     ['# tool', 'Green Supplier Finance Lab'],
@@ -239,13 +306,15 @@ function downloadCsv() {
     ['# year', String(caseData.year)],
     ['# buyer', `${economyLabel(caseData.country)} · ${industryLabel(caseData.industry)} (${caseData.buyer})`],
     ['# supplier_filter', supplier ? `${economyLabel(supplier)} (${supplier})` : 'All foreign supplier economies'],
-    ['# value_status', 'input_usd_m=PUBLISHED; alloc_*=MODELLED allocation; scenario_*=ASSUMED (hypothetical)'],
+    ['# value_status', 'input_usd_m=PUBLISHED; alloc_*/all_tier/deeper=MODELLED; scenario_*=ASSUMED (hypothetical)'],
+    ['# upstream', 'all_tier = supplier all-tier multiplier x input; deeper = all_tier - direct; financing uses direct first-tier only'],
     ['# scenario', `reduction=${reduction}%; cost_per_tonne=$${cost}; buyer_share=${buyerShare}%; ceiling=${threshold}% of allocated VA`],
     ['# generated', new Date().toISOString()],
     ['# rows', String(links.length)],
   ].map(r => r.join(',')).join('\n');
   const header = ['supplier_code', 'supplier_economy', 'supplier_sector',
-    'input_usd_m', 'alloc_direct_ghg_t', 'alloc_va_usd_m',
+    'input_usd_m', 'alloc_direct_ghg_t', 'deeper_upstream_ghg_t', 'all_tier_ghg_t',
+    'direct_visibility_share', 'multiplier_status', 'alloc_va_usd_m',
     'scenario_investment_usd_m', 'scenario_buyer_usd_m', 'scenario_supplier_usd_m',
     'burden_over_alloc_va', 'min_buyer_share_pct_at_ceiling'].join(',');
   const q = v => `"${String(v).replace(/"/g, '""')}"`;
@@ -253,7 +322,10 @@ function downloadCsv() {
     const sc = scenario(l, reduction, cost, buyerShare);
     const need = minimumBuyerShare(l, sc.investment, threshold);
     return [l.code, q(economyLabel(l.country)), q(industryLabel(l.industry)),
-      l.input, l.ghg, l.va, sc.investment, sc.buyer, sc.supplier,
+      l.input, l.ghg,
+      l.hasMult ? l.deeper : '', l.hasMult ? l.allTier : '',
+      l.hasMult && l.visibility !== null ? l.visibility : '', l.hasMult ? 'in-network' : 'no_multiplier',
+      l.va, sc.investment, sc.buyer, sc.supplier,
       l.va > 0 ? sc.supplier / l.va : '', need === null ? '' : need].join(',');
   });
   const csv = meta + '\n' + header + '\n' + lines.join('\n') + '\n';
@@ -320,6 +392,16 @@ function wire() {
     document.querySelectorAll('.cbtab').forEach(x => x.classList.remove('active'));
     b.classList.add('active'); renderCodebook(b.dataset.tab, $('codebookSearch').value);
   }));
+  const setBasis = b => {
+    basis = b;
+    $('basisDirect').classList.toggle('active', b === 'direct');
+    $('basisAll').classList.toggle('active', b === 'alltier');
+    $('basisDirect').setAttribute('aria-pressed', String(b === 'direct'));
+    $('basisAll').setAttribute('aria-pressed', String(b === 'alltier'));
+    render();   // changes the exposure chart + narrative; never the financing figures
+  };
+  $('basisDirect').addEventListener('click', () => setBasis('direct'));
+  $('basisAll').addEventListener('click', () => setBasis('alltier'));
 }
 
 async function boot() {
@@ -330,6 +412,10 @@ async function boot() {
     return;
   }
   setText('caseCountBadge', manifest.buyer_count.toLocaleString('en'));
+  try {
+    const r = await fetch('./data/multipliers_2022.json.gz');
+    if (r.ok) MULT = (await decodeCaseBuffer(await r.arrayBuffer())).sectors;
+  } catch { MULT = null; }   // the upstream module degrades gracefully if absent
   const src = $('sources');
   src.replaceChildren(document.createTextNode('Sources: '));
   for (const [label, url] of [[manifest.sources.icio.name, manifest.sources.icio.url],

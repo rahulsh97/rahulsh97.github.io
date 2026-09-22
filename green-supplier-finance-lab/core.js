@@ -86,6 +86,53 @@ export function supplierEconomies(caseData) {
   return [...new Set(caseData.links.country)].sort();
 }
 
+// --- upstream (all-tier) multiplier -------------------------------------------
+// Attach direct / all-tier / deeper-upstream / visibility to each link, using
+// the per-sector multiplier table { code: [g, m] } (t CO2e per USD million).
+// direct = existing allocated first-tier emissions (g*z); all-tier = m*z;
+// deeper = all-tier - direct (>= 0); visibility = direct/all-tier in [0,1].
+// A missing multiplier leaves the fields null (never zero).
+export function attachUpstream(links, mult) {
+  for (const l of links) {
+    const s = mult && mult[l.code];
+    if (s && Number.isFinite(s[1]) && s[1] > 0) {
+      l.mult_g = s[0]; l.mult_m = s[1];
+      l.allTier = s[1] * l.input;
+      l.deeper = Math.max(0, l.allTier - l.ghg);
+      l.visibility = l.allTier > 0 ? Math.min(1, l.ghg / l.allTier) : null;
+      l.hasMult = true;
+    } else {
+      l.mult_g = null; l.mult_m = null;
+      l.allTier = null; l.deeper = null; l.visibility = null; l.hasMult = false;
+    }
+  }
+  return links;
+}
+
+// Case-level upstream totals over links that have a multiplier. The link-level
+// results sum to these within tolerance (direct + deeper == all-tier).
+export function upstreamTotals(links) {
+  let direct = 0, all = 0, missing = 0;
+  for (const l of links) {
+    if (l.hasMult) { direct += l.ghg; all += l.allTier; } else missing++;
+  }
+  const deeper = Math.max(0, all - direct);
+  return {
+    direct, all, deeper,
+    visibility: all > 0 ? direct / all : null,
+    covered: links.length - missing, missing, total: links.length,
+  };
+}
+
+// Whether ranking by direct vs all-tier emissions gives a different leader.
+export function rankingsDiffer(links) {
+  const withM = links.filter(l => l.hasMult);
+  if (withM.length < 2) return false;
+  const topDirect = [...withM].sort((a, b) => b.ghg - a.ghg)[0];
+  const topAll = [...withM].sort((a, b) => b.allTier - a.allTier)[0];
+  return topDirect.code !== topAll.code;
+}
+
 // --- scenario arithmetic (hypothetical financing) -----------------------------
 export function scenario(link, reductionPct, costPerTonne, buyerSharePct) {
   const investment = link.ghg * (reductionPct / 100) * costPerTonne / 1e6; // USD million
@@ -195,6 +242,20 @@ export function buildNarrative(ctx) {
       t += `The top five emissions-linked sectors account for ${pct(top5EmitShare)} of allocated emissions in this view.`;
     }
     paras.push({ heading: 'Where exposure is concentrated', text: t });
+  }
+
+  if (ctx.upstream) {
+    const u = ctx.upstream;
+    let t = `Of the all-tier emissions embodied in these inputs, `
+      + `${pct(u.visibility)} is visible at the first tier and ${pct(1 - u.visibility)} lies deeper upstream `
+      + `(suppliers to these suppliers and earlier production stages). `
+      + `The first-tier channel with the largest all-tier footprint is ${u.topAllTier.name} (${u.topAllTier.code}), `
+      + `at ${formatTonnes(u.topAllTier.allTier)}. `;
+    t += u.rankingsDiffer
+      ? `Ranking by direct emissions differs from ranking by all-tier emissions, so the most exposed link changes once deeper tiers are counted. `
+      : `Ranking by direct and by all-tier emissions gives the same leading link here. `;
+    t += `Deeper exposure may require finance to travel beyond the immediate supplier contract.`;
+    paras.push({ heading: 'Visible vs hidden upstream', text: t });
   }
 
   paras.push({

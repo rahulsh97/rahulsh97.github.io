@@ -1,0 +1,103 @@
+{
+  "definition": "OECD GHG multiplier: total direct+indirect GHG (kt CO2e, GWP100 AR5) per USD million of final demand; Leontief m = g'(I-A)^-1.",
+  "validation_inputs": {
+    "icio": "ICIO 2023 Regular 2020_SML.csv (77x45)",
+    "ghg": "GHG Footprints DF_MAIN PROD_GHG 2020",
+    "oecd_reference": "ghg_mult_77_7745_2020.csv (column sums)"
+  },
+  "sample_comparison": [
+    {
+      "sector": "USA_C29",
+      "recon_kt_per_musd": 0.2834,
+      "oecd_kt_per_musd": 0.3393,
+      "abs_diff": -0.0559,
+      "pct_diff": -16.46
+    },
+    {
+      "sector": "DEU_C29",
+      "recon_kt_per_musd": 0.2138,
+      "oecd_kt_per_musd": 0.2279,
+      "abs_diff": -0.0141,
+      "pct_diff": -6.18
+    },
+    {
+      "sector": "CHN_C29",
+      "recon_kt_per_musd": 0.7273,
+      "oecd_kt_per_musd": 0.8178,
+      "abs_diff": -0.0906,
+      "pct_diff": -11.07
+    },
+    {
+      "sector": "USA_C26",
+      "recon_kt_per_musd": 0.0796,
+      "oecd_kt_per_musd": 0.0839,
+      "abs_diff": -0.0043,
+      "pct_diff": -5.17
+    },
+    {
+      "sector": "DEU_C24",
+      "recon_kt_per_musd": 1.1259,
+      "oecd_kt_per_musd": 1.1645,
+      "abs_diff": -0.0386,
+      "pct_diff": -3.31
+    },
+    {
+      "sector": "CHN_D",
+      "recon_kt_per_musd": 6.8668,
+      "oecd_kt_per_musd": 6.3866,
+      "abs_diff": 0.4802,
+      "pct_diff": 7.52
+    },
+    {
+      "sector": "FRA_A01_02",
+      "recon_kt_per_musd": 1.1184,
+      "oecd_kt_per_musd": 1.1289,
+      "abs_diff": -0.0105,
+      "pct_diff": -0.93
+    },
+    {
+      "sector": "GBR_F",
+      "recon_kt_per_musd": 0.2265,
+      "oecd_kt_per_musd": 0.2273,
+      "abs_diff": -0.0008,
+      "pct_diff": -0.34
+    },
+    {
+      "sector": "IND_C20",
+      "recon_kt_per_musd": 1.0973,
+      "oecd_kt_per_musd": 1.222,
+      "abs_diff": -0.1247,
+      "pct_diff": -10.2
+    },
+    {
+      "sector": "USA_G",
+      "recon_kt_per_musd": 0.1282,
+      "oecd_kt_per_musd": 0.1398,
+      "abs_diff": -0.0116,
+      "pct_diff": -8.32
+    },
+    {
+      "sector": "DEU_C10T12",
+      "recon_kt_per_musd": 0.4187,
+      "oecd_kt_per_musd": 0.4343,
+      "abs_diff": -0.0156,
+      "pct_diff": -3.6
+    },
+    {
+      "sector": "JPN_H49",
+      "recon_kt_per_musd": 0.7331,
+      "oecd_kt_per_musd": 0.3527,
+      "abs_diff": 0.3803,
+      "pct_diff": 107.83
+    }
+  ],
+  "method_check_implied_g_over_my_g_median": 1.0,
+  "spearman_rank_corr": 0.9307,
+  "log_pearson_corr": 0.9136,
+  "abs_pct_diff_median": 6.35,
+  "within_10pct": 64.7,
+  "within_20pct": 79.8,
+  "n_sectors": 3380,
+  "ghg_missing_sectors_g0": 45,
+  "notes": "Method exactly reproduced (implied-g median 1.0). Residual absolute-level differences reflect production-emissions vintage (emission-intensive sectors, small economies) and ROW production emissions absent from PROD_GHG. Direct visibility share (g/m) reconciles to ~1pp on the largest sectors."
+}
