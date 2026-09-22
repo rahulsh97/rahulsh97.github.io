@@ -1,5 +1,48 @@
 # Build log
 
+## 22 September 2026 — upstream emissions multiplier (all-tier) module
+
+Added an all-tier upstream multiplier on top of the existing multi-buyer first-tier
+tool, reusing the already-parsed 2022 ICIO + GHG files (no source rediscovery, no
+rebuild of the 3,926 first-tier case files).
+
+**Validation gate (run before publishing anything).** Established OECD's official
+GHG multiplier definition from `Readme_GHGMult.txt` — total direct+indirect GHG
+(kt CO₂e, GWP100 AR5) per USD million of final demand, i.e. `g'(I−A)^-1` on the
+small ICIO (77×45). Reconstructed the 2020 multiplier on the matching ICIO (2023
+Regular 2020, 77×45) + 2020 `PROD_GHG` and compared to `ghg_mult_77_7745_2020.csv`
+(column sums = total multiplier per demand sector):
+- Method exactly reproduced — OECD's multiplier run backward through the network
+  returns the independent `g` (median implied/own ratio 1.00).
+- Spearman rank corr 0.93; direct visibility share reconciles to ~1 pp on the
+  1,000 largest sectors; absolute levels differ ~6% median (DEU_C29 −6.2%,
+  CHN_C29 −11.1%), from emissions **vintage** (intensive sectors, small economies)
+  and **ROW** emissions absent from `PROD_GHG`; one transport outlier (JPN_H49)
+  documented. Report: `docs/multiplier_validation_2020.json`. **PASS within a
+  documented tolerance** — visibility share and rankings robust; absolute all-tier
+  levels are modelled estimates.
+
+**2022 build.** `scripts/build_multipliers.py` computes `A=Z·diag(1/x)`, `g=E/x`
+(GHG matched by an injective concordance C24A→C241_2431, C24B→C242_2432,
+C302T309→C30X301 — no double-counting) and solves `(I−A)ᵀm=g` for 4,050 sectors.
+Output `data/multipliers_2022.json.gz` (3,936 sectors, 47 KB): per-sector `g` and
+`m` in t CO₂e per USD million. `m≥g` everywhere; self-check `g[CHN_C20]·z = 196,432 t`
+matches the case's allocated direct exactly.
+
+**Interface.** New "How much is hidden upstream?" section with four headline cards
+(direct / deeper / all-tier / direct visibility), a stacked visible-vs-deeper chart
+for the leading channels, plain-English explanation, and a Direct / Direct+deeper
+toggle that re-lenses the exposure chart and narrative but **never** the financing
+figures. A finance notice states financing covers first-tier direct emissions only.
+The policy explanation gained a "Visible vs hidden upstream" paragraph. Evidence
+table + CSV gained direct / deeper / all-tier / visibility / multiplier-status
+fields. Substantive result: DEU_C29 — 12.4% visible at the first tier, 87.6%
+(29.3 Mt) hidden deeper; all-tier leader (China electrical equipment) differs from
+the direct leader (China chemicals).
+
+**Tests.** `tests/test_multipliers.py` (21) + upstream cases in `core.test.mjs`.
+Full suite: 16 core + 31 data + 21 multiplier, all pass.
+
 ## 21 September 2026 — multi-country, multi-industry expansion (v2)
 
 ### Verified the expansion is real before changing the interface

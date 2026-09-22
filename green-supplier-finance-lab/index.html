@@ -63,8 +63,30 @@
           <div class="stack" aria-label="Scenario burden split"><span id="buyerBar"></span><span id="supplierBar"></span></div>
           <div class="legend"><span><i class="blue"></i> Buyer <b id="buyerCost">—</b></span><span><i class="rust"></i> Suppliers <b id="supplierCost">—</b></span></div>
         </div>
+        <p class="note finance-note">Financing calculations currently cover <strong>direct first-tier emissions only</strong>. All-tier multiplier emissions may occur in deeper supplier industries and cannot automatically be assigned to the first-tier supplier.</p>
       </section>
     </div>
+
+    <section class="panel upstream" id="upstream" aria-labelledby="upH">
+      <div class="section-heading">
+        <div><p class="eyebrow">01B / UPSTREAM</p><h2 id="upH">How much is hidden upstream?</h2></div>
+        <div class="toggle" role="group" aria-label="Emissions basis for the exposure chart">
+          <button id="basisDirect" class="tg active" type="button" aria-pressed="true">Direct first tier</button>
+          <button id="basisAll" class="tg" type="button" aria-pressed="false">Direct + deeper upstream</button>
+        </div>
+      </div>
+      <p class="caption">Direct emissions occur in the industry supplying the buyer. Deeper-upstream emissions occur in industries supplying that supplier and in earlier production stages. The multiplier traces these requirements through the input–output network. <strong>“All-tier emissions embodied in purchased inputs”</strong> is not necessarily the buyer's complete corporate Scope 3 footprint: OECD units are sectors, and the calculation may exclude final demand, capital formation and downstream emissions.</p>
+      <div class="up-cards">
+        <article><span class="kind modelled">MODELLED</span><strong id="upDirect" title="">—</strong><small>Direct first-tier emissions · t CO₂e</small></article>
+        <article><span class="kind modelled">MODELLED</span><strong id="upDeeper" title="">—</strong><small>Deeper-upstream emissions · t CO₂e</small></article>
+        <article><span class="kind modelled">MODELLED</span><strong id="upAll" title="">—</strong><small>Total all-tier emissions · t CO₂e</small></article>
+        <article class="coverage-card"><span class="kind coverage">DIAGNOSTIC</span><strong id="upVis">—</strong><small>Direct visibility share · first tier ÷ all-tier</small></article>
+      </div>
+      <h3 class="up-h3">Leading first-tier input channels — visible vs deeper upstream</h3>
+      <div id="upBars"></div>
+      <div class="legend up-legend"><span><i class="blue"></i> Visible (direct first tier)</span><span><i class="deep"></i> Deeper upstream</span></div>
+      <p class="small muted" id="upNote"></p>
+    </section>
 
     <section class="panel">
       <div class="section-heading"><div><p class="eyebrow">03 / DIAGNOSTIC</p><h2>How much would buyers need to cover?</h2></div></div>
@@ -84,7 +106,9 @@
         <div class="scroll"><table>
           <thead><tr>
             <th>Supplier economy · sector</th><th>Inputs<br>USD m</th>
-            <th>Allocated direct emissions<br>t CO₂e</th><th>Allocated VA<br>USD m</th>
+            <th>Direct first-tier<br>t CO₂e</th><th>Deeper-upstream<br>t CO₂e</th>
+            <th>All-tier embodied<br>t CO₂e</th><th>Direct<br>visibility</th><th>Multiplier<br>status</th>
+            <th>Allocated VA<br>USD m</th>
             <th>Scenario supplier burden<br>USD m</th><th>Burden / allocated VA</th>
             <th>Min buyer share<br>at chosen ceiling</th>
           </tr></thead>
@@ -102,10 +126,41 @@
       <div><span class="mark allocated">2</span><h3>Modelled allocation</h3><p>Supplier-sector emissions and value added are multiplied by this buyer's share of that sector's gross output. Proportional first-tier allocation; it assumes identical intensity across a sector's buyers and excludes deeper upstream tiers. It is not a measured Scope 3 footprint.</p></div>
       <div><span class="mark assumed">3</span><h3>Assumed financing</h3><p>A target, cost per tonne and buyer share create a financing scenario. Supplier burden divided by allocated value added is a scale comparison, not a default probability, observed affordability, or causal estimate.</p></div>
     </div>
+    <details class="methods up-methods"><summary>Upstream multiplier: method, units, classification &amp; 2020 validation</summary>
+      <p class="def"><strong>All-tier multiplier.</strong> The technical-coefficient matrix is
+        <span class="mono">A = Z · diag(1/x)</span> with <span class="mono">A[i,j] = Z[i,j]/x<sub>j</sub></span>
+        (Z[i,j] = intermediate deliveries from sector <em>i</em> to sector <em>j</em>; x<sub>j</sub> = sector <em>j</em>
+        gross output). Direct intensity <span class="mono">g<sub>i</sub> = production emissions<sub>i</sub> / x<sub>i</sub></span>
+        (t CO₂e per USD million). The all-tier Leontief multiplier is
+        <span class="mono">m = g′ (I − A)⁻¹</span>, solved as <span class="mono">(I − A)ᵀ m = g</span> (no dense inverse).
+        For a purchase <em>z</em> from first-tier supplier <em>i</em>: direct = g<sub>i</sub>·z (= the allocated first-tier
+        emissions); all-tier embodied = m<sub>i</sub>·z; deeper-upstream = (m<sub>i</sub> − g<sub>i</sub>)·z ≥ 0;
+        direct visibility = g<sub>i</sub>/m<sub>i</sub> ∈ [0,1].</p>
+      <p class="def"><strong>Scope.</strong> This is <em>all-tier emissions embodied in purchased inputs</em>, not necessarily
+        the buyer's complete corporate Scope 3 footprint: OECD units are sectors rather than firms, and the calculation may
+        exclude final demand, capital formation and downstream emissions. The <strong>direct</strong> first-tier figure is the
+        strict-matched exposure; the <strong>all-tier</strong> figure adds deeper tiers via the network.</p>
+      <p class="def"><strong>Sources &amp; classification (2022).</strong> OECD ICIO 2025 Regular <span class="mono">2022_SML.csv</span>
+        and GHG Footprints MAIN <span class="mono">PROD_GHG</span> 2022. Emissions match ICIO sectors by an injective concordance
+        (C24A→C241_2431, C24B→C242_2432, C302T309→C30X301; else identity), so no combined sector total is duplicated across
+        sub-sectors. Rest-of-World has no production-emissions series (g = 0), which understates upstream routed through ROW.</p>
+      <p class="def"><strong>2020 validation.</strong> The method was reconstructed for 2020 on the matching ICIO (2023 vintage,
+        77×45) + 2020 <span class="mono">PROD_GHG</span> and compared to OECD's official multiplier
+        (<span class="mono">ghg_mult_77_7745_2020</span>, definition: total direct+indirect GHG in kt CO₂e per USD million of
+        final demand). Result: the method is exactly reproduced (OECD's multiplier run back through the network returns the
+        independent emissions vector, median ratio 1.00); Spearman rank correlation 0.93; direct visibility share reconciles to
+        ~1 pp on the largest sectors. Absolute levels differ by ~6% median, from production-emissions vintage differences
+        (emission-intensive sectors, small economies) and ROW emissions absent from PROD_GHG. All-tier levels are therefore
+        modelled estimates within this documented tolerance.</p>
+      <p class="def"><strong>Financing stays first-tier.</strong> The financing scenario uses only <strong>direct first-tier</strong>
+        allocated emissions. Deeper-upstream emissions are not charged to the first-tier supplier, because who controls those
+        emissions — and how finance would travel across tiers — is not observed.</p>
+    </details>
     <p class="positioning">This research preview combines published sector-level production accounts with transparent
-      proportional allocation and user-defined financing scenarios. It is intended for policy screening, research
-      exploration and teaching. It is <strong>not</strong> a firm-level carbon inventory, a credit assessment, a
-      causal model or an investment recommendation. First-tier suppliers only.</p>
+      proportional allocation, an all-tier input–output multiplier and user-defined financing scenarios. It is intended for
+      policy screening, research exploration and teaching. It is <strong>not</strong> a firm-level carbon inventory, a credit
+      assessment, a causal model or an investment recommendation. First-tier direct exposure and all-tier embodied exposure are
+      shown as distinct measures.</p>
     <p class="source" id="sources"></p>
   </section>
 </main>
