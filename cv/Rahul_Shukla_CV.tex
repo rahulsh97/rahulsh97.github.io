@@ -1,0 +1,152 @@
+\documentclass[10pt,a4paper]{article}
+
+\usepackage[a4paper,top=1.28cm,bottom=1.25cm,left=1.48cm,right=1.48cm]{geometry}
+\usepackage{fontspec}
+\usepackage{microtype}
+\usepackage{enumitem}
+\usepackage{tabularx}
+\usepackage{titlesec}
+\usepackage{xcolor}
+\usepackage[hidelinks]{hyperref}
+\usepackage{bookmark}
+\usepackage{ragged2e}
+\usepackage{parskip}
+
+\setmainfont{Bitstream Charter}
+\setsansfont{Nimbus Sans}
+\definecolor{navy}{HTML}{294F66}
+\definecolor{teal}{HTML}{3F7891}
+\definecolor{muted}{HTML}{4E5E68}
+\definecolor{rule}{HTML}{C9D2D4}
+
+\pagestyle{empty}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\setlist[itemize]{leftmargin=1.25em,itemsep=1.8pt,topsep=2.5pt,parsep=0pt,partopsep=0pt}
+\urlstyle{same}
+\hypersetup{
+  pdftitle={Rahul Shukla - Curriculum Vitae},
+  pdfauthor={Rahul Shukla},
+  pdfsubject={Applied economics, research and policy},
+  pdfkeywords={economics, development, firms, labour markets, research, policy, data}
+}
+
+\titleformat{\section}
+  {\sffamily\bfseries\color{navy}\large}
+  {}{0pt}{}
+  [\vspace{-4pt}\color{rule}\titlerule]
+\titlespacing*{\section}{0pt}{8.5pt}{4.5pt}
+
+\newcommand{\entry}[4]{%
+  \begin{tabularx}{\textwidth}{@{}X r@{}}
+    \textbf{#1} & \textbf{#2} \\
+    \textit{#3} & \textit{#4}
+  \end{tabularx}\vspace{-2pt}
+}
+
+\newcommand{\pub}[3]{\textbf{#1} (#2). \href{#3}{\color{teal}\ulineTitle{#1}}}
+\newcommand{\ulineTitle}[1]{#1}
+\newcommand{\link}[2]{\href{#1}{\color{teal}#2}}
+\newcommand{\roleline}[1]{\textcolor{muted}{#1}}
+
+\begin{document}
+
+{\fontsize{27}{30}\selectfont\bfseries\color{navy} Rahul Shukla}\hfill
+{\sffamily\small\color{muted} London, United Kingdom}
+
+\vspace{1pt}
+{\sffamily\small\bfseries\color{teal} Applied Economist \enspace $\vert$ \enspace Firms, Jobs and Institutions}
+
+\vspace{3pt}
+{\sffamily\small
+\href{mailto:r.shukla6@lse.ac.uk}{r.shukla6@lse.ac.uk} \enspace $\vert$ \enspace
++44 7587 475577 \enspace $\vert$ \enspace
+\link{https://rahulsh97.github.io}{Portfolio} \enspace $\vert$ \enspace
+\link{https://github.com/rahulsh97}{GitHub} \enspace $\vert$ \enspace
+\link{https://www.linkedin.com/in/rahulshuklamzp}{LinkedIn}}
+
+\vspace{7pt}
+{\color{teal}\rule{\textwidth}{1.5pt}}
+
+\section*{Profile}
+Applied economist and research portfolio lead working on firms, jobs and institutions in developing economies. Bring seven years of experience across quantitative research, evidence funding, policy engagement and programme delivery. At the International Growth Centre, manage an \pounds8.5 million portfolio of 43 projects across 16 countries, working with researchers, donors and development finance institutions on firm productivity, SME finance and inclusive growth. Build reproducible analytical tools and translate research into decisions, partnerships and public-facing work.
+
+\section*{Professional Experience}
+
+\entry{International Growth Centre, London School of Economics}{Oct 2021 to present}{Research Coordinator, Firms, Trade and Productivity}{London, UK}
+\begin{itemize}
+  \item Manage the full research and grant lifecycle for an \pounds8.5 million multi-donor portfolio of 43 projects across 16 countries, covering commissioning, budget and ethics review, contracting, milestones, risk, quality assurance and reporting to Argidius Foundation, USAID, IDRC and FCDO.
+  \item Commission policy-relevant research on firm productivity, SME finance, women\textquotesingle s entrepreneurship and agricultural value chains, working with academic teams across Stanford, Yale, Harvard, Oxford, MIT and LSE.
+  \item Secured and now lead a \pounds250,000 Unilever TRANSFORM partnership studying how small firms integrate into corporate global value chains; manage a five-person team and mixed-methods research across Africa, South Asia and Southeast Asia.
+  \item Designed practitioner and researcher matchmaking with EBRD, IDB Invest and We-Fi, convening 120 researchers and 42 practitioners and translating discussions into research and evaluation opportunities.
+  \item Co-organised the 2023 and 2024 IGC and Yale Firms, Trade and Development Conferences, which brought together 149 researchers from 38 countries, and moderate public webinars for research and policy audiences.
+  \item Build reproducible research infrastructure and interactive tools using R, Python, SQL, DuckDB and JavaScript, including packages for Indian enterprise and labour surveys and live analysis of productivity, pay and supply-chain finance.
+  \item Supervise research assistants and interns, maintain portfolio-level delivery and financial systems, and turn technical findings into briefs, public articles, dashboards and donor products.
+\end{itemize}
+
+\entry{Institute for Employment Studies}{Sep 2021 to Dec 2021}{Research Intern}{London, UK}
+\begin{itemize}
+  \item Conducted and coded interviews in Atlas.ti for the UK Department for Work and Pensions Health-led Employment Trials, contributing to the published evaluation synthesis and related analysis.
+  \item Produced monthly UK labour-market analysis from Office for National Statistics microdata in R for policy audiences.
+\end{itemize}
+
+\entry{J-PAL South Asia}{May 2021 to Aug 2021}{Policy, Training and Communications Intern}{Delhi, India}
+\begin{itemize}
+  \item Built a cost-benefit and social-return-on-investment model for a public higher-education institution and produced three policy memos on private-sector climate investment for government audiences.
+\end{itemize}
+
+\entry{Dr APJ Abdul Kalam Centre}{Jul 2019 to Aug 2020}{Research Analyst}{Delhi, India}
+\begin{itemize}
+  \item Evaluated large Government of India employment and housing programmes and prepared analytical briefs on the informal economy, implementation performance and pension design.
+\end{itemize}
+
+\entry{Kaivalya Education Foundation}{Jul 2017 to Jun 2019}{Gandhi Fellow}{Gurugram, India}
+\begin{itemize}
+  \item Delivered school-system reform across 25 villages; designed eight digital learning labs later scaled to 110 schools; and founded the Iqra Learning Centre, which supported more than 150 women and girls.
+\end{itemize}
+
+\newpage
+
+\section*{Selected Research and Policy Writing}
+\begin{itemize}
+  \item \textbf{\link{https://www.ideasforindia.in/topics/macroeconomics/productivity-up-wages-flat-how-indias-manufacturing-growth-has-stopped-working-for-its-workers}{Productivity up, wages flat: How India\textquotesingle s manufacturing growth has stopped working for its workers}}. \textit{Ideas for India}, 2026. Original analysis of ASI data on productivity and labour\textquotesingle s share of value added.
+  \item \textbf{\link{https://m.thewire.in/article/labour/noida-is-not-a-law-and-order-problem-it-is-a-delivery-problem}{Noida Is Not a Law and Order Problem. It Is a Delivery Problem}}. \textit{The Wire}, 2026. Policy commentary on labour regulation, social insurance and state capacity.
+  \item \textbf{Broken Pieces: A Qualitative Study of the Uncoordinated Response to COVID-19 in India}. Presented at the University of Oxford Social Outcomes Conference, 2021.
+  \item Contributor to the \textbf{\link{https://www.gov.uk/government/publications/health-led-employment-trials-evaluation/health-led-trials-evaluation-synthesis-report}{Health-led Employment Trials Evaluation Synthesis Report}}, UK Department for Work and Pensions, 2023.
+  \item Selected IGC writing: \link{https://www.theigc.org/blogs/how-can-markets-contribute-economic-growth-and-development}{markets and growth}; \link{https://www.theigc.org/blogs/performance-insights-firms-trade-conference}{firm performance}; and \link{https://www.theigc.org/blogs/firm-level-decisions-productivity-inclusive-growth}{productivity and inclusive growth}.
+\end{itemize}
+
+\section*{Selected Data and Research Tools}
+\begin{itemize}
+  \item \textbf{\link{https://rahulsh97.github.io/industry-productivity-pay-atlas/}{Industry Productivity and Pay Atlas}}: interactive analysis of productivity and labour income using RBI India KLEMS, OECD STAN and UNIDO INDSTAT, including within-industry and between-industry decompositions.
+  \item \textbf{\link{https://rahulsh97.github.io/green-supplier-finance-lab/}{Who Pays to Green the Supply Chain?}}: OECD input-output and emissions research preview that separates observed accounts, modelled allocations and financing scenarios.
+  \item \textbf{\link{https://rahulshukla.shinyapps.io/d3poindia/}{BharatViz}} and \textbf{\link{https://rahulsh97.github.io/nfhs-lab/}{NFHS District Change Lab}}: accessible state and district views of Indian health, schooling, productivity and pay indicators with visible data limitations.
+  \item Public R package prototypes for \link{https://github.com/rahulsh97/asi}{ASI}, \link{https://github.com/rahulsh97/asuse}{ASUSE} and \link{https://github.com/rahulsh97/plfs}{PLFS}, using documented local workflows for India\textquotesingle s enterprise and labour surveys.
+\end{itemize}
+
+\section*{Education}
+\entry{University College London}{2020 to 2021}{MSc Public Policy, Merit; Chevening Scholar}{London, UK}
+{\small Dissertation: difference-in-differences evaluation of a teacher-training programme using ten years of panel data. Coursework included advanced quantitative methods, impact evaluation, applied microeconomics and public-sector economics.}
+
+\vspace{4pt}
+\entry{University of Delhi}{2014 to 2017}{BCom (Honours), Finance and Economics, Distinction; top 2\% of cohort}{Delhi, India}
+
+\section*{Methods and Technical Skills}
+\begin{tabularx}{\textwidth}{@{}>{\bfseries}p{2.45cm}X@{}}
+Methods & Panel data; difference-in-differences; impact evaluation; cost-benefit and social-return analysis; survey and qualitative research; evidence synthesis; data harmonisation. \\
+Programming & R, Stata, Python, SQL, JavaScript, DuckDB and LaTeX; reproducible pipelines, package development, interactive visualisation and APIs. \\
+Other tools & Advanced Excel including macros and VBA; Power BI, Tableau, Bloomberg Terminal, Atlas.ti, NVivo, Git and GitHub. \\
+Languages & English (C2), Hindi (native), French (B1). \\
+\end{tabularx}
+
+\section*{Awards and Professional Development}
+\begin{itemize}
+  \item Chevening Scholarship, UK Foreign, Commonwealth and Development Office, 2020 to 2021.
+  \item MITx MicroMasters in Statistics and Data Science; LSE certificates in Machine Learning Applications in R and Python for Data Science.
+\end{itemize}
+
+\vfill
+{\centering\sffamily\footnotesize\color{muted}
+Full portfolio, writing and project methods: \href{https://rahulsh97.github.io}{rahulsh97.github.io}\par}
+
+\end{document}
