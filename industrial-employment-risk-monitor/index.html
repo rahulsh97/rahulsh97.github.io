@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Industrial Employment Risk Monitor — a calibrated, out-of-time-tested screening tool by Rahul Shukla.">
+  <title>Industrial Employment Risk Monitor | Rahul Shukla</title>
+  <link rel="stylesheet" href="../style.css?v=worldbank1">
+  <style>
+    .monitor-hero{padding:92px 0 58px;border-bottom:1px solid var(--line)}
+    .monitor-hero h1{max-width:900px;margin:.2em 0;font-size:clamp(2.8rem,7vw,5.5rem);line-height:.96}
+    .monitor-hero .lead{max-width:800px;font-size:1.22rem;color:var(--ink-soft)}
+    .hero-actions,.monitor-links{display:flex;gap:12px;flex-wrap:wrap;margin-top:28px}
+    .button-link{display:inline-block;padding:12px 18px;background:var(--ink);color:white;text-decoration:none;font-weight:700}
+    .button-link.secondary{background:transparent;color:var(--ink);border:1px solid var(--line)}
+    .stat-row{display:grid;grid-template-columns:repeat(4,1fr);border:1px solid var(--line);margin-top:42px;background:white}
+    .stat{padding:20px;border-right:1px solid var(--line)}.stat:last-child{border-right:0}
+    .stat strong{display:block;font-family:var(--serif);font-size:2rem;line-height:1.1}.stat span{color:var(--muted);font-size:.88rem}
+    .monitor-grid{display:grid;grid-template-columns:1fr 1fr;gap:26px}
+    .monitor-card{background:white;border:1px solid var(--line);padding:28px}
+    .monitor-card h3{margin-top:0}
+    .result-card{border-top:4px solid var(--blue-dark)}
+    .risk-line{display:flex;justify-content:space-between;gap:24px;align-items:end;padding-bottom:18px;border-bottom:1px solid var(--line)}
+    .risk-line strong{font-family:var(--serif);font-size:3rem;line-height:1}.risk-line span{color:var(--muted)}
+    .reading{counter-reset:read}.reading li{list-style:none;position:relative;padding:0 0 18px 38px}
+    .reading li:before{counter-increment:read;content:counter(read);position:absolute;left:0;top:1px;width:24px;height:24px;border:1px solid var(--blue);border-radius:50%;text-align:center;line-height:22px;font-weight:700;color:var(--blue-dark)}
+    .evidence-band{background:var(--blue-wash);border-block:1px solid var(--line)}
+    .disclosure{padding:18px 0;border-bottom:1px solid var(--line)}.disclosure strong{display:block;margin-bottom:5px}
+    .tool-frame{width:100%;height:760px;border:1px solid var(--line);background:white}
+    .small-note{font-size:.9rem;color:var(--muted)}
+    @media(max-width:760px){.stat-row{grid-template-columns:1fr 1fr}.stat:nth-child(2){border-right:0}.stat:nth-child(-n+2){border-bottom:1px solid var(--line)}.monitor-grid{grid-template-columns:1fr}.tool-frame{height:680px}}
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="site-header"><nav class="site-nav wrap" aria-label="Main navigation"><a class="brand" href="../index.html" aria-label="Rahul Shukla, home">Rahul Shukla<span>.</span></a><ul><li><a href="../index.html">Home</a></li><li><a href="../blog.html">Research &amp; writing</a></li><li><a class="active" href="../projects.html">Tools &amp; data</a></li><li><a href="../cv.html">CV</a></li></ul></nav></header>
+
+  <main id="main">
+    <section class="monitor-hero wrap">
+      <p class="kicker">UNIDO INDSTAT · MACHINE LEARNING · RESEARCH PREVIEW</p>
+      <h1>Where might manufacturing employment contract severely?</h1>
+      <p class="lead">A transparent early-warning monitor for deciding which country–industry cases deserve closer investigation—not a forecast, a causal model or an automated policy recommendation.</p>
+      <div class="hero-actions">
+        <a class="button-link" href="https://industrial-employment-risk-monitor.streamlit.app/">Launch the interactive monitor →</a>
+        <a class="button-link secondary" href="https://github.com/rahulsh97/industrial-employment-risk-monitor">Code and documentation ↗</a>
+      </div>
+      <div class="stat-row" aria-label="Project coverage">
+        <div class="stat"><strong>94</strong><span>economies</span></div>
+        <div class="stat"><strong>24</strong><span>manufacturing industries</span></div>
+        <div class="stat"><strong>1,196</strong><span>cases scored in 2023</span></div>
+        <div class="stat"><strong>0.68</strong><span>out-of-time ROC-AUC</span></div>
+      </div>
+    </section>
+
+    <section class="wrap section">
+      <div class="section-heading split-heading"><div><p class="section-label">The economic question</p><h2>A warning system, not a crystal ball</h2></div><p>The monitor estimates whether a country–industry observation resembles earlier cases that were followed by a fall of at least 20% in employees over three years.</p></div>
+      <div class="monitor-grid">
+        <article class="monitor-card result-card">
+          <p class="work-meta">Illustrative case · Albania · Basic metals · 2023</p>
+          <div class="risk-line"><div><span>Calibrated risk</span><strong>25%</strong></div><div><span>Tier</span><strong>High</strong></div></div>
+          <p>This means roughly <strong>25 cases in 100</strong> with a similar statistical profile would be expected to experience a severe contraction. It does not mean that employment will definitely fall.</p>
+          <p class="small-note">The live monitor lets the user replace this example with any scoreable country–industry pair.</p>
+        </article>
+        <article class="monitor-card">
+          <p class="work-meta">What the interface explains</p>
+          <ol class="reading">
+            <li><strong>Signal.</strong> The calibrated risk and the correct historical comparison.</li>
+            <li><strong>Evidence.</strong> The statistical warning signals behind the classification.</li>
+            <li><strong>Next investigation.</strong> Questions on demand, firm exits, technology, trade and worker transitions.</li>
+          </ol>
+        </article>
+      </div>
+    </section>
+
+    <section class="evidence-band section">
+      <div class="wrap">
+        <div class="section-heading split-heading"><div><p class="section-label">Why it is credible</p><h2>Performance and limitations stay visible</h2></div><p>The model is trained on earlier years and evaluated on later years it had not seen. The interface reports uncertainty and false-warning trade-offs rather than presenting scores as certainty.</p></div>
+        <div class="monitor-grid">
+          <div>
+            <div class="disclosure"><strong>Out-of-time testing</strong><span>ROC-AUC 0.683; PR-AUC 0.203 against an 0.108 base rate.</span></div>
+            <div class="disclosure"><strong>Calibrated tiers</strong><span>Observed contraction rates rise from about 5 in 100 in Low to 28 in 100 in High.</span></div>
+            <div class="disclosure"><strong>Missing remains missing</strong><span>Cases without sufficient indicators are labelled “insufficient data”; they are never converted to zero.</span></div>
+          </div>
+          <div>
+            <div class="disclosure"><strong>No causal claim</strong><span>Warning signals are associations and should trigger investigation, not automatic intervention.</span></div>
+            <div class="disclosure"><strong>Comparable specification</strong><span>The outcome uses employees consistently and excludes nominal monetary levels.</span></div>
+            <div class="disclosure"><strong>Known weakness</strong><span>Performance is weaker for economies absent from model training and is flagged at the point of use.</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="wrap section" id="tool">
+      <div class="section-heading split-heading"><div><p class="section-label">Interactive product</p><h2>Explore the live monitor</h2></div><p>Start with the Briefing, investigate one case in Explore, and open Evidence only when you want the validation detail.</p></div>
+      <iframe class="tool-frame" title="Industrial Employment Risk Monitor interactive application" loading="lazy" src="https://industrial-employment-risk-monitor.streamlit.app/?embed=true"></iframe>
+      <p class="small-note">If the embedded application is slow to wake, <a href="https://industrial-employment-risk-monitor.streamlit.app/">open it directly in a new page</a>.</p>
+    </section>
+
+    <section class="wrap section">
+      <div class="section-heading split-heading"><div><p class="section-label">Engineering</p><h2>From licensed data to a deployed research product</h2></div><p>Python feature engineering, calibrated gradient-boosted trees, frozen reproducible artefacts, pytest and GitHub Actions, Docker configuration and Streamlit deployment. Raw licensed UNIDO data is not redistributed.</p></div>
+      <div class="monitor-links"><a href="https://github.com/rahulsh97/industrial-employment-risk-monitor/blob/main/MODEL_CARD.md">Read the model card ↗</a><a href="https://github.com/rahulsh97/industrial-employment-risk-monitor">Inspect the repository ↗</a><a href="../projects.html">Back to all tools →</a></div>
+    </section>
+  </main>
+
+  <footer class="site-footer"><div class="wrap footer-grid"><p><strong>Rahul Shukla</strong><br>Applied economist</p><nav aria-label="Footer navigation"><a href="../index.html">Home</a><a href="../blog.html">Research &amp; writing</a><a href="../projects.html">Tools &amp; data</a><a href="../cv.html">CV</a></nav></div></footer>
+</body>
+</html>
