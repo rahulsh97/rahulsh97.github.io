@@ -1,0 +1,3 @@
+# Source tables are hash-pinned to the validated run manifest: store byte-for-byte (no line-ending conversion).
+data/*.csv -text
+data/run_manifest.json -text

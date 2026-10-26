@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Compare how a fixed compensation budget protects Malawian households from a maize price rise. Precomputed, validated results from IHS6 2024/25. A research preview by Rahul Shukla.">
+  <title>Maize Compensation Lab | Rahul Shukla</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="core.js" defer></script>
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to research tool</a>
+  <header class="site-header"><a href="../index.html" class="brand">Rahul Shukla <span>/ data tools</span></a><a class="back" href="../projects.html">← Tools &amp; data</a></header>
+  <main id="main">
+    <section class="hero wrap">
+      <div>
+        <p class="eyebrow">Malawi IHS6 2024/25 · Precomputed research preview</p>
+        <h1>Who should be compensated<br><em>when maize prices rise?</em></h1>
+        <p class="lead">A maize price rise hurts households that buy more maize than they sell, and the poorest are mostly buyers. Compare how six ways of spending the <strong>same compensation budget</strong> protect them, under different price scenarios and policy objectives, and see how much the answer depends on what the government knows.</p>
+        <div class="hero-actions"><a class="button primary" href="#explore">Explore the rules</a><a class="button" href="docs/malawi-maize-compensation-policy-brief.pdf">Policy brief (PDF, 4 pp.)</a><a class="button" href="docs/malawi-maize-compensation-technical-report.pdf">Technical report (PDF, 6 pp.)</a></div>
+      </div>
+      <aside class="hero-note" aria-label="About these results">
+        <div class="slash">↗</div>
+        <strong>972</strong><span>validated price and policy scenarios, all precomputed</span>
+        <hr>
+        <strong>0</strong><span>simulations run in your browser: every number is a stored, validated result</span>
+        <p>Survey bootstrap uncertainty (200 replicates) is available for 3 scenarios. Elsewhere, results are point estimates.</p>
+      </aside>
+    </section>
+
+    <section id="explore" class="workspace wrap" aria-labelledby="explore-title">
+      <div class="section-heading"><div><p class="eyebrow">01 / Choose a validated scenario</p><h2 id="explore-title">Same budget, <em>different rules</em></h2></div><p>Every option below is one of the exact combinations that was simulated and validated. You cannot enter other values: unvalidated scenarios are never interpolated.</p></div>
+      <div class="presets" role="group" aria-label="Scenarios with survey uncertainty">
+        <span>Scenarios with uncertainty:</span>
+        <button type="button" class="preset" data-preset="central" aria-pressed="false">Central</button>
+        <button type="button" class="preset" data-preset="lambda0" aria-pressed="false">No farm-gate gain</button>
+        <button type="button" class="preset" data-preset="lambda1" aria-pressed="false">Full farm-gate pass-through</button>
+      </div>
+      <form class="controls" id="controls" aria-label="Scenario parameters (validated values only)"></form>
+      <div class="objective" role="radiogroup" aria-labelledby="objective-label">
+        <span id="objective-label">Policy objective</span>
+        <label><input type="radio" name="objective" value="P1" checked> Poverty gap <small>(primary)</small></label>
+        <label><input type="radio" name="objective" value="P2"> Squared poverty gap</label>
+        <label><input type="radio" name="objective" value="loss_comp"> Losses of poor households compensated</label>
+      </div>
+      <div class="status" id="status" aria-live="polite"></div>
+      <div class="stats" aria-live="polite">
+        <div><span>Poverty gap, no compensation</span><strong id="stat-shock">–</strong><small id="stat-shock-cap">–</small></div>
+        <div><span>Best implementable rule</span><strong id="stat-best">–</strong><small id="stat-best-cap">–</small></div>
+        <div><span>Share of the attainable gain</span><strong id="stat-share">–</strong><small id="stat-share-cap">–</small></div>
+        <div><span>Exposure information adds</span><strong id="stat-exposure">–</strong><small id="stat-exposure-cap">–</small></div>
+      </div>
+
+      <div class="figures">
+        <section class="panel" aria-labelledby="rules-title">
+          <div class="panel-heading"><div><p class="eyebrow">02 / Compare</p><h3 id="rules-title">How much of the attainable improvement each rule achieves</h3></div><span class="pill" id="rules-pill">Precomputed</span></div>
+          <div class="plot" id="rules-chart"></div>
+          <div class="legend-row"><span class="key key-impl"></span>Implementable <span class="key key-ideal"></span>Survey-ideal (upper bound) <span class="key key-bench"></span>Perfect information (infeasible)</div>
+          <p class="caption" id="rules-caption"></p>
+        </section>
+        <section class="panel" aria-labelledby="table-title">
+          <div class="panel-heading"><div><p class="eyebrow">03 / The numbers</p><h3 id="table-title">Outcomes after the shock and the transfer</h3></div><span class="pill">Table view</span></div>
+          <div class="table-wrap"><table id="rules-table"><caption class="sr-only">Outcomes by compensation rule for the selected scenario</caption></table></div>
+          <p class="caption">Poverty gap and squared gap ×100, person-weighted (lower is better). "Losses compensated" is the share of the value of shock losses borne by initially poor households that transfers offset (higher is better). The share column is derived: (no transfer − rule) ÷ (no transfer − perfect-information benchmark).</p>
+        </section>
+      </div>
+
+      <section class="panel uncertainty" aria-labelledby="unc-title">
+        <div class="panel-heading"><div><p class="eyebrow">04 / How sure are we?</p><h3 id="unc-title">Difference from the PMT rule, with 95% survey-bootstrap intervals</h3></div><span class="pill" id="unc-pill">–</span></div>
+        <div class="plot short" id="unc-chart"></div>
+        <p class="caption" id="unc-caption"></p>
+      </section>
+    </section>
+
+    <section class="wrap section-block" aria-labelledby="dist-title">
+      <div class="section-heading"><div><p class="eyebrow">05 / Distribution</p><h2 id="dist-title">Who loses, <em>who is reached</em></h2></div><p>Central scenario only (retail grain +25%, farm-gate +12.5%, flour +21%, budget = 50% of losses). Deciles of pre-shock consumption per person.</p></div>
+      <div class="figures">
+        <section class="panel" aria-labelledby="dec-title">
+          <div class="panel-heading"><div><p class="eyebrow">Loss and transfer by decile</p><h3 id="dec-title">Per cent of household consumption</h3></div>
+            <label class="inline-select">Transfer rule<select id="dec-rule"></select></label></div>
+          <div class="plot" id="dec-chart"></div>
+          <div class="legend-row"><span class="key key-loss"></span>Welfare change from the shock <span class="key key-transfer"></span>Transfer received (selected rule)</div>
+        </section>
+        <section class="panel" aria-labelledby="market-title">
+          <div class="panel-heading"><div><p class="eyebrow">Market position</p><h3 id="market-title">Why the poor lose most</h3></div><span class="pill">Share of people</span></div>
+          <div id="market"></div>
+          <p class="caption">Purchases refer to the 7 days before interview, sales to the last season. A 7-day window understates buying: the share of households buying maize ranges from 33% (May) to 71% (February).</p>
+        </section>
+      </div>
+    </section>
+
+    <section class="wrap section-block" aria-labelledby="geo-title">
+      <div class="section-heading"><div><p class="eyebrow">06 / Geography</p><h2 id="geo-title">District differences are real <em>but small</em></h2></div><p>Central scenario. Design-based district estimates (every district rests on at least 16 enumeration areas) with 95% intervals and bootstrap rank probabilities. District level only: no sub-district estimates are published.</p></div>
+      <div class="vardec" id="vardec"></div>
+      <div class="figures">
+        <section class="panel" aria-labelledby="geo-chart-title">
+          <div class="panel-heading"><div><p class="eyebrow">Post-shock poverty gap</p><h3 id="geo-chart-title">Districts ranked, with 95% intervals</h3></div><span class="pill">No compensation</span></div>
+          <div class="plot tall" id="geo-chart"></div>
+        </section>
+        <section class="panel" aria-labelledby="geo-table-title">
+          <div class="panel-heading"><div><p class="eyebrow">District detail</p><h3 id="geo-table-title">Exposure and ranking uncertainty</h3></div>
+            <label class="inline-select">Sort by<select id="geo-sort"><option value="P1_post">Post-shock poverty gap</option><option value="rel">Loss (% of consumption)</option><option value="prob_top8">P(in top 8)</option><option value="net_buyer">Net-buyer share</option></select></label></div>
+          <div class="table-wrap tall"><table id="geo-table"><caption class="sr-only">District diagnostics, central scenario</caption></table></div>
+        </section>
+      </div>
+    </section>
+
+    <section id="method" class="methods">
+      <div class="wrap methods-grid">
+        <div><p class="eyebrow">07 / Methodology · read before interpreting</p><h2>Stored results,<br><em>stated assumptions.</em></h2>
+          <div class="downloads">
+            <a class="button primary" href="docs/malawi-maize-compensation-policy-brief.pdf">Policy brief (PDF)</a>
+            <a class="button" href="docs/malawi-maize-compensation-technical-report.pdf">Technical report (PDF)</a>
+            <a class="button" href="README.md">Methods &amp; data notes</a>
+            <a class="button" href="https://github.com/rahulsh97/rahulsh97.github.io/tree/main/maize-compensation-lab/data">Source tables</a>
+          </div>
+        </div>
+        <div>
+          <p><strong>What this is.</strong> A viewer for precomputed results. Every number on this page was produced by a validated analysis of the Malawi Sixth Integrated Household Survey (IHS6, 2024/25; 12,502 households, 782 enumeration areas) and stored as aggregate tables. Nothing is simulated, re-estimated or interpolated in the browser. Before any simulation, the analysis reproduced all 103 published IHS6 poverty figures exactly, including every district.</p>
+          <p><strong>Welfare model.</strong> First-order money-metric effect of a price change: maize sales × farm-gate price change − purchases × retail price change, allowing the two prices to move differently. Maize a household grows and eats has no first-order effect. An optional second-order term allows consumers to substitute. Values are real 2024 kwacha per person, against the official poverty line.</p>
+          <p><strong>Rules and budget.</strong> Every rule spends exactly the same budget, set as a share of the aggregate losses of losing households. PMT and exposure rules use household demographics, dwelling, assets and land. They are cross-fitted by enumeration area, so no household is scored by a model trained on its own area. Coverage equals the government's survey estimate of the post-shock poverty rate.</p>
+          <p><strong>Uncertainty.</strong> A Rao–Wu complex-survey bootstrap (200 replicates; enumeration areas resampled within strata). In each replicate the government's targeting models and estimates are re-fitted and outcomes re-evaluated. It covers three scenarios. The 972-scenario grid is a deterministic sensitivity analysis, not a probability distribution.</p>
+          <p><strong>Limitations.</strong></p>
+          <ul>
+            <li>Scenarios, not forecasts or causal estimates: no wage, supply or general-equilibrium effects.</li>
+            <li>PMT and exposure rules are an <em>upper bound</em>. They are fitted on the same survey they are judged on; real registries are older and noisier.</li>
+            <li>Purchases are 7-day recall, annualised, and fieldwork coincided with a maize price spike. Purchases are deflated with general rather than maize-specific prices.</li>
+            <li>Geography is district level only.</li>
+            <li>The bootstrap excludes weight re-calibration, finite-population corrections and measurement error.</li>
+          </ul>
+          <p class="sources"><strong>Sources and provenance.</strong> National Statistical Office of Malawi, IHS6 2024/25 (World Bank Microdata Library, MWI_2024-2025_IHS-VI_v01_M). Household microdata are not published here and are not redistributable. Displayed values come from validated run <code>maize_20261025T173130_1dafdd</code>: its aggregate tables and manifest are in <code>data/</code>, and the build checks every table against the manifest's SHA-256 hashes. Related evidence: Chiwaula et al. (2024) IFPRI MaSSP WP45; Gualavisi &amp; Newhouse (2025) <i>World Bank Economic Review</i>; Brown, Ravallion &amp; van de Walle (2018) <i>Journal of Development Economics</i>.</p>
+        </div>
+      </div>
+    </section>
+  </main>
+  <footer><div class="wrap">© Rahul Shukla · Research preview · Precomputed results, not live simulation · <a href="../projects.html">Tools &amp; data</a> · <a href="https://github.com/rahulsh97/rahulsh97.github.io/tree/main/maize-compensation-lab">Source code</a></div></footer>
+</body>
+</html>

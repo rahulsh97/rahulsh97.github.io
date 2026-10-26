@@ -1,0 +1,7 @@
+outcome,partition,R2_between
+dy / c0 (%),district (32),0.0785631686429201
+dy / c0 (%),district x urban/rural,0.0861516909148586
+post-shock poverty gap (person),district (32),0.0947017615423166
+post-shock poverty gap (person),district x urban/rural,0.107642585599641
+change in poverty gap (person),district (32),0.0586282461843115
+change in poverty gap (person),district x urban/rural,0.0652370341578624
