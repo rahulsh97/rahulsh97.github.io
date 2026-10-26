@@ -1,0 +1,16 @@
+id,check,value,pass,essential
+G1,poor/upoor recomputed from rexpagg/hhsize/365 vs lines (mismatches),0,TRUE,TRUE
+G2,price_indexL = spatial x temporal; expagg/rexpagg = price_indexL (max abs dev),4.69e-05,TRUE,TRUE
+G2b,temporal index unique within area x survey month,TRUE,TRUE,TRUE
+G3,maize purchase rows with quantity>0 but spend missing/0 (share),25 / 8912,TRUE,TRUE
+G3b,rows with spend>0 but no purchased quantity,0,TRUE,FALSE
+G4,annualised maize purchases exceed nominal food consumption (households),0,TRUE,TRUE
+G4b,seasonal factor range (min-max) across area x calendar quarter,0.53 - 1.77,TRUE,FALSE
+G5,maize sale rows with missing value (share),0 / 2263,TRUE,TRUE
+G5b,rainy-season sale rows with month and year recorded (share),1,TRUE,TRUE
+G5c,"rainy-season sale rows dated before fieldwork window (Jul 2024), share",0.343,TRUE,FALSE
+G6,plots with unusable self-reported area (share),0.0022,TRUE,FALSE
+G7,max share missing across PMT/exposure covariates,0.0001 (head_qual),TRUE,TRUE
+I1,person-weighted market position (7-day purchases; season sales),seller only=0.137; both=0.060; neither=0.358; buyer only=0.445,TRUE,FALSE
+I2,"household-weighted share growing maize (IFPRI WP45, IHS5: 74% of households)",0.746,TRUE,FALSE
+I3,share of sales value (real) from sales outside fieldwork window,0.18,TRUE,FALSE

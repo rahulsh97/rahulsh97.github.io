@@ -1,0 +1,183 @@
+{
+  "run_id": "maize_20261025T173130_1dafdd",
+  "started": "2026-10-25T17:31:29+0000",
+  "status": "completed",
+  "code": {
+    "git_head": "no commit (repository has no commits)",
+    "code_tree_sha256": "c72f1ec0b910182862c3cb751ad28d62883d66b1380e3bbc8f58adf82ef95c49",
+    "files": {
+      "Code/R/00_setup.R": "4773b4e7e163777d3ce5ad030e9c7df29143f9f9461963c70873fd04f5071154",
+      "Code/R/01_prepare.R": "e220e348d638f681e3206f6cd0bb4342e9936129a7fbe4f71389c4bb0785c5ab",
+      "Code/R/02_estimate.R": "934fbf492952efea475fd4e3f796f5245f34229175067df359c00c169349e853",
+      "Code/R/03_validate.R": "17c63f71c8959b429a97deb982a5b0efa079784832ef9ad1dfaa80efdae9462e",
+      "Code/R/09_maize_run_infra.R": "65749149d953b15698461411aca6154d705318b9f83f4decb6646a35b1e08216",
+      "Code/R/10_maize_prepare.R": "13aaf2be82ca616ec349494a86f51e4b1a009506f9cf02e32136033fdab65ee4",
+      "Code/R/11_maize_functions.R": "df464d3948eb0148bd00a4332f2955bcb4b5419f594fe2a2a100f566f54dd645",
+      "Code/R/12_maize_scenarios.R": "74736304489e65e979d7c6504fff7deed16b86d03385dfbaabea820491cdf97a",
+      "Code/R/13_maize_bootstrap.R": "32c3b118d4722bcdc227043f8755be4b83c2c1e02b14c9f5d52394d00cda36a5",
+      "Code/R/14_maize_spatial.R": "b7c904e8b67092f403bda5f0f7397ff882f5fa8e49ccc17752c935d7bec1505e",
+      "Code/R/15_maize_compare.R": "4ca79ade7acbdb412f6bfb147f089a775f90db4747a32c963c944e77e078e587",
+      "Code/R/published_benchmarks.R": "23e5fdbaaa3b0e5639a573301a155f4a53555f4b095e56288be2bfb9a6f4053a",
+      "Code/R/run_all.R": "20c467ef8e4e9a3959f5e2a7509c86768d52a840e2affe19434519483657d064",
+      "Code/R/run_maize.R": "ef35113ade7b617438c49cc5408f3165e60e2b23a84313999e47deca73f78f03",
+      "Code/R/tests/test_maize.R": "12aaaed2e06dc63ed36f7a0f6df6534c1177a212a7b670aaf95fbedfb59d321c"
+    }
+  },
+  "environment": {
+    "R": "R version 4.5.0 (2025-04-11 ucrt)",
+    "platform": "x86_64-w64-mingw32",
+    "packages": {
+      "data.table": "1.17.8",
+      "survey": "4.4.8",
+      "jsonlite": "2.0.0",
+      "digest": "0.6.37",
+      "testthat": "3.3.2"
+    }
+  },
+  "parameters": {
+    "central": {
+      "pi": 0.25,
+      "lambda": 0.5,
+      "theta": 0.85,
+      "eps": 0,
+      "kappa": 0.5,
+      "green": false,
+      "annual": "x52"
+    },
+    "grid": {
+      "pi": [
+        0.1,
+        0.25,
+        0.5
+      ],
+      "lambda": [
+        0,
+        0.5,
+        1
+      ],
+      "theta": [
+        0.7,
+        0.85,
+        1
+      ],
+      "eps": [
+        0,
+        -0.3,
+        -0.6
+      ],
+      "kappa": [
+        0.25,
+        0.5,
+        1
+      ],
+      "green": [
+        false,
+        true
+      ],
+      "annual": [
+        "x52",
+        "seasonal"
+      ]
+    },
+    "bootstrap": {
+      "type": "Rao-Wu rescaled (subbootstrap)",
+      "replicates": 200,
+      "components": [
+        "U3 joint (primary)",
+        "U1 sampling only",
+        "U2 information only"
+      ]
+    },
+    "cross_fitting": {
+      "folds": 5,
+      "grouping": "EA"
+    }
+  },
+  "seeds": {
+    "folds": 20261025,
+    "bootstrap": 20261025
+  },
+  "validation": {
+    "synthetic_tests": {
+      "passed": true,
+      "tests": 10,
+      "expectations": 80
+    },
+    "gate_passed": true,
+    "gate_checks": 15,
+    "validated_outputs_unchanged": true,
+    "comparison_with_validated": {
+      "gate_values": {
+        "max_abs_diff": 0,
+        "status": "identical (within tolerance)"
+      },
+      "central_rules_unchanged_definitions": {
+        "max_abs_diff": 0,
+        "status": "identical (within tolerance)"
+      },
+      "central_B1": {
+        "max_abs_diff": 0,
+        "status": "identical (within tolerance)"
+      },
+      "central_R5": {
+        "max_abs_diff": 0.000443341980099987,
+        "status": "changed, expected: Duan smearing added to the R5 consumption prediction"
+      },
+      "shock_summary": {
+        "max_abs_diff": 0.000470968440595243,
+        "status": "identical (within tolerance)"
+      },
+      "grid_P1_unchanged_rules": {
+        "max_abs_diff": 0,
+        "status": "identical (within tolerance)"
+      },
+      "grid_P1_R5": {
+        "max_abs_diff": 0.00574842234270001,
+        "status": "changed, expected: Duan smearing in R5"
+      },
+      "district_point_estimates": {
+        "max_abs_diff": 0,
+        "status": "identical (within tolerance)"
+      },
+      "district_rank_probabilities": {
+        "max_abs_diff": 0,
+        "status": "identical (within tolerance)"
+      },
+      "variance_decomposition": {
+        "max_abs_diff": 0,
+        "status": "identical (within tolerance)"
+      },
+      "bootstrap_point_estimates_unchanged_rules": {
+        "max_abs_diff": 0,
+        "status": "identical (within tolerance)"
+      },
+      "bootstrap_se_ratio_U3_over_old_U1": {
+        "min": 0.998,
+        "max": 1.107,
+        "status": "changed, expected: U3 refits targeting models and re-normalises the budget in each replicate"
+      }
+    }
+  },
+  "inputs_sha256": {
+    "zip_ihs6": "c11baa121b2ac5dfa1bd64f2e88d8836df044c66271be0a571da417512b19405",
+    "ihs6_poverty_hh": "0a4c06db355b3710feebc7ac7a5b71da9e7886083615fce0d0f45b5f084497d7",
+    "validation_ihs": "a73192ef05853462c11d81132d307360c54b5f763f4f45d0e5e963fcd9c4f511",
+    "zip_ihs5": "51aacbf1751ef6314c5c1da0fadf1741975c9f9769ceb3443f382e1898129d54"
+  },
+  "finished": "2026-10-25T17:40:26+0000",
+  "runtime_minutes": 8.9,
+  "outputs": {
+    "Outputs/runs/maize_20261025T173130_1dafdd/tables/comparison_with_validated.csv": "168741a173cc5bdded41b3d89163f7b09982c16c7e155f12d85adc7e6b51e78b",
+    "Outputs/runs/maize_20261025T173130_1dafdd/tables/maize_boot_diffs.csv": "9ccd430c63999e249b6b2b3571b7c2fd01fc1860319905c25d1de688f0e6d600",
+    "Outputs/runs/maize_20261025T173130_1dafdd/tables/maize_boot_rank.csv": "6dca38d0914267bb4e08ef4931133b6c3b87aa3390f75c34fcee1a8450f69663",
+    "Outputs/runs/maize_20261025T173130_1dafdd/tables/maize_boot_summary.csv": "77a2202ed0b33d45fdbec03b5be536a2fe9818ea1c726b65d71cb90380ae5ff7",
+    "Outputs/runs/maize_20261025T173130_1dafdd/tables/maize_central_rules.csv": "9c3cb0b37cdfac729c672ae3e8593bf8d19d474eea88f37f57d8aa1416c45a77",
+    "Outputs/runs/maize_20261025T173130_1dafdd/tables/maize_district_diagnostics.csv": "9f7dc5922cdbfed661d150e53c691a2ba770087b436a1d46e20c186927052052",
+    "Outputs/runs/maize_20261025T173130_1dafdd/tables/maize_gate.csv": "2dc9550ce476ca8a58090f3bca2972468bcba24235aff66a85af985c74bbf7d6",
+    "Outputs/runs/maize_20261025T173130_1dafdd/tables/maize_grid_best_rule.csv": "7a999409b3302deb48ee9294a15c2a921d99e5e8f10aefdbc42e8d1f48c09766",
+    "Outputs/runs/maize_20261025T173130_1dafdd/tables/maize_incidence_deciles.csv": "2826e0bd97fe4e72af617cdc39c59e1e0751c8e802755e02dd1372816ca806b9",
+    "Outputs/runs/maize_20261025T173130_1dafdd/tables/maize_scenario_grid.csv": "656043ad3a5404b2d5ca4181b1adebf50d54facfa2065b4e7bdea87bc8af78b8",
+    "Outputs/runs/maize_20261025T173130_1dafdd/tables/maize_shock_summary.csv": "1d7902bb017563a9286e85d8f3a53cf46f8d9f46b4216714fec8609d18f37723",
+    "Outputs/runs/maize_20261025T173130_1dafdd/tables/maize_variance_decomposition.csv": "0541212638809856be35f0ca7f4a926974bfe2dcf43aec1e1f7907112f2913b9"
+  }
+}
