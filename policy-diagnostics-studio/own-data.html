@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Use Your Own Data — Policy Diagnostics Studio</title>
+<link rel="stylesheet" href="assets/studio.css?v=0.6.0">
+</head>
+<body>
+<header class="topbar"><div class="in">
+  <a class="brand" href="index.html#/"><span class="logo">P</span><span>Policy Diagnostics Studio<small>Open subnational evidence for policy</small></span></a>
+  <nav class="nav" aria-label="Main"><a href="index.html#/">Analyse a country</a><a href="ai.html">Ask a question (AI, experimental)</a><a href="local-tools.html" data-nav="local">Local research tools</a><a href="index.html#/sources">Data sources &amp; methods</a><a class="on" href="own-data.html">Use your own data</a></nav>
+</div></header>
+<main>
+  <div class="chead"><div><h1>Use your own data</h1><p class="muted">Optional, for advanced users. Everything the warehouse already supports can be analysed directly from <a href="index.html#/">Analyse a country</a> — no upload needed.</p></div></div>
+  <div class="grid2">
+    <section class="card"><h3>Check whether two datasets can be combined</h3><p class="small">Upload a regional poverty and population file and a regional spending file — or start from the Studio's own poverty and population data and add only your spending file. The same rules as the main Studio decide whether they may be merged, and explain why.</p><a class="btn primary" href="#checker">Open the compatibility checker ↓</a></section>
+    <section class="card"><h3>Run the allocation tool on one file</h3><p class="small">Already have one clean regional file with population, poverty rate and spending? Run the funding-rule tool directly. Files stay in your browser and are never sent to a server.</p><a class="btn" href="allocation.html">Open the allocation tool →</a></section>
+  </div>
+
+  <section class="card" id="checker"><h2>Compatibility checker</h2>
+  <p class="small muted">Outcomes: <span class="pill">Compatible</span> <span class="pill">Compatible after a documented step</span> <span class="pill amber">Descriptive only</span> <span class="pill red">Not mergeable</span>. Regions are matched on identical identifiers or the Studio's documented boundary crosswalk — never by guessing from similar names.</p>
+
+  <div class="note info"><strong>Start from Studio data (recommended):</strong> load regional poverty and population for a country and year as Dataset A, then add your spending file as Dataset B, keyed by the same area codes or by ISO 3166-2 region codes.
+    <div class="grid3" style="margin-top:8px"><div><label class="f" for="wCountry">Country (years available)</label><select id="wCountry"><option>Loading…</option></select></div><div><label class="f" for="wSet">Survey round</label><select id="wSet"></select></div><div><label class="f" for="wLine">Poverty line</label><select id="wLine"><option value="poverty_rate">$3.00 a day (2021 prices)</option><option value="poor420">$4.20 a day</option><option value="poor830">$8.30 a day</option></select></div></div>
+    <div style="margin-top:8px"><button class="btn" id="wLoad">Use as Dataset A</button> <span id="wStatus" class="small muted"></span></div></div>
+
+  <div class="grid2" style="margin-top:12px">
+    <div><h3>Dataset A — poverty and population</h3>
+      <label class="f" for="aFile">CSV file</label><input id="aFile" type="file" accept=".csv">
+      <div class="grid2" style="gap:10px;margin-top:8px"><div><label class="f" for="aYear">Reference year</label><input id="aYear" type="number" min="1950" max="2100" value="2022"></div><div><label class="f" for="aGeo">Administrative level</label><input id="aGeo" type="text" value="ADM1" placeholder="e.g. ADM1"></div></div>
+      <label class="f" for="aDef" style="margin-top:8px">Poverty measure and line</label><input id="aDef" type="text" value="Declared poverty line">
+      <div class="grid2" style="gap:10px;margin-top:8px"><div><label class="f" for="aRegion">Region identifier column</label><select id="aRegion"></select></div><div><label class="f" for="aPop">Population column</label><select id="aPop"></select></div></div>
+      <div class="grid2" style="gap:10px;margin-top:8px"><div><label class="f" for="aPov">Poverty rate column</label><select id="aPov"></select></div><div><label class="f" for="aScale">Poverty scale</label><select id="aScale"><option value="percent">Percent (0–100)</option><option value="share">Share (0–1), convert ×100</option></select></div></div>
+      <label class="f" for="aStatusSel" style="margin-top:8px">Type of values</label><select id="aStatusSel"><option value="observed">Observed survey estimates</option><option value="projection">Projections or now-casts</option><option value="model">Model-based estimates</option></select>
+      <div id="aStatus" class="small muted" style="margin-top:6px">Not loaded.</div></div>
+    <div><h3>Dataset B — public spending</h3>
+      <label class="f" for="bFile">CSV file</label><input id="bFile" type="file" accept=".csv">
+      <div class="grid2" style="gap:10px;margin-top:8px"><div><label class="f" for="bYear">Fiscal year</label><input id="bYear" type="number" min="1950" max="2100" value="2022"></div><div><label class="f" for="bGeo">Administrative level</label><input id="bGeo" type="text" value="ADM1"></div></div>
+      <label class="f" for="bDef" style="margin-top:8px">Spending definition</label><input id="bDef" type="text" value="Executed local-currency expenditure">
+      <div class="grid2" style="gap:10px;margin-top:8px"><div><label class="f" for="bRegion">Region identifier column</label><select id="bRegion"></select></div><div><label class="f" for="bSpend">Spending column</label><select id="bSpend"></select></div></div>
+      <div class="grid2" style="gap:10px;margin-top:8px"><div><label class="f" for="bCodes">Region codes in this file</label><select id="bCodes"><option value="same">Same codes as Dataset A</option><option value="iso3166_2">ISO 3166-2 (needs Studio Dataset A)</option></select></div><div><label class="f" for="bCur">Currency and price basis</label><input id="bCur" type="text" placeholder="e.g. KES, current prices"></div></div>
+      <div class="grid2" style="gap:10px;margin-top:8px"><div><label class="f" for="bStatusSel">Type of values</label><select id="bStatusSel"><option value="observed">Executed / outturn</option><option value="projection">Budgeted / projected</option></select></div>
+      <div><label class="f" for="bAttr">Where is spending located?</label><select id="bAttr"><option value="unverified">Not verified</option><option value="beneficiary">Where services are delivered / beneficiaries live</option><option value="subnational_accounts">Regional government's own accounts</option><option value="administrative">Location of the spending agency only</option><option value="mixed">Mixed or incomplete</option></select></div></div>
+      <div id="bStatus" class="small muted" style="margin-top:6px">Not loaded.</div></div>
+  </div>
+  <div class="dl" style="margin-top:14px"><button class="btn ghost" id="synthetic">Try a synthetic example</button><button class="btn primary" id="check">Check compatibility</button><button class="btn" id="toAlloc" disabled>Open matched data in the allocation tool</button><button class="btn ghost" id="export" disabled>Download matched CSV</button><button class="btn ghost" id="audit" disabled>Download check report (JSON)</button></div>
+  <div id="checks" aria-live="polite" class="small muted" style="margin-top:12px">Load data and check compatibility to see the result.</div>
+  <p class="small muted">A compatible result is not a policy recommendation. Survey sampling error, boundary versions and spending classifications still need expert review.</p>
+  </section>
+</main>
+<footer>Files you add stay in your browser; nothing is transmitted. Policy Diagnostics Studio v0.5. Boundaries: World Bank SPID boundary package (CC BY 4.0), derived from FAO GAUL 2015, GADM, Eurostat NUTS, national statistical offices, DHS and UN sources; for statistical display only. Public research preview by <a href="https://rahulsh97.github.io/">Rahul Shukla</a>; runs entirely in your browser, no uploads, no account.</footer>
+<script src="evidence_engine.js?v=0.6.0"></script>
+</body>
+</html>

@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ask a Question — Policy Diagnostics Studio</title>
+<link rel="stylesheet" href="assets/studio.css?v=0.6.1"><link rel="stylesheet" href="assets/ai_policy.css?v=0.6.1">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="topbar"><div class="in">
+  <a class="brand" href="index.html#/"><span class="logo">P</span><span>Policy Diagnostics Studio<small>Open subnational evidence for policy</small></span></a>
+  <nav class="nav" aria-label="Main"><a href="index.html#/">Analyse a country</a><a class="on" href="ai.html" aria-current="page">Ask a question (AI, experimental)</a><a href="local-tools.html" data-nav="local">Local research tools</a><a href="index.html#/sources">Data sources &amp; methods</a><a href="own-data.html">Use your own data</a></nav>
+</div></header>
+<main id="main" class="aiwrap">
+  <section class="hero" style="padding-top:18px"><span class="badge-noupload">Free · runs in your browser · no API key · no data uploaded</span>
+    <h1>Ask a question about a country</h1>
+    <p>An open-source language model running on your device works out which of the Studio's analyses your question asks for. The answer — every number — comes from the Studio's validated calculations on its built-in data, with sources, assumptions and limits. The model never writes figures.</p></section>
+  <section class="card">
+    <div class="aigrid">
+      <div><label class="f" for="country">Country</label><select id="country" class="ai-select"><option>Loading…</option></select></div>
+      <div class="small muted" style="align-self:end">If your question names a country, that country is used.</div>
+    </div>
+    <label class="f" for="question" style="margin-top:12px">Your question</label>
+    <textarea id="question" rows="2" maxlength="500" placeholder="e.g. Which counties in Kenya have the highest poverty rates?">Which counties in Kenya have the highest poverty rates?</textarea>
+    <div class="examples" aria-label="Example questions">
+      <button data-example="Which counties in Kenya have the highest poverty rates?" data-iso="KEN">Kenya: regional poverty</button>
+      <button data-example="Do Brazilian states with more poverty receive more state spending per resident?" data-iso="BRA">Brazil: spending vs need</button>
+      <button data-example="How would a budget be divided between Malawi's districts if it were allocated per poor person?" data-iso="MWI">Malawi: funding rules</button>
+      <button data-example="Which regions of Kenya have the highest child stunting?" data-iso="KEN">Kenya: child stunting</button>
+      <button data-example="Which areas of Kenya were drier than normal?" data-iso="KEN">Kenya: rainfall</button>
+    </div>
+    <div class="actions"><button id="ask" class="ai-main">Ask (on-device AI)</button><button id="kw">Ask without AI (keyword matching)</button></div>
+    <p class="small muted" id="modelstatus">The model is not loaded yet. The first AI question downloads it once (about 23 MB from public open-source hosts: jsDelivr and Hugging Face); after that it is cached. No fee, no account, no API key.</p>
+    <p class="small" id="status" role="status" aria-live="polite"></p>
+  </section>
+  <div id="answer" aria-live="polite"></div>
+  <div class="note info"><strong>What this assistant does and does not do.</strong> It answers questions about regional poverty, observed spending versus need (Brazil), hypothetical funding rules, regional health and education indicators, and rainfall — for any country in the Studio whose data support it. It declines forecasts, questions about policy effects, policy recommendations and unrelated topics, and says so when the data are not available. Experimental; not an official World Bank tool.</div>
+</main>
+<footer>Policy Diagnostics Studio v0.6 · AI Policy Assistant (experimental) · on-device model: Xenova/all-MiniLM-L6-v2 (Apache 2.0) via Transformers.js (Apache 2.0). No server-side AI; downloads use ordinary internet bandwidth only. Boundaries: World Bank SPID boundary package (CC BY 4.0), derived from FAO GAUL 2015, GADM, Eurostat NUTS, national statistical offices, DHS and UN sources; for statistical display only. Public research preview by <a href="https://rahulsh97.github.io/">Rahul Shukla</a>; runs entirely in your browser, no uploads, no account.</footer>
+<script src="assets/analysis.js?v=0.6.1"></script>
+<script src="assets/ai_policy_core.js?v=0.6.1"></script>
+<script type="module" src="assets/ai_policy.js?v=0.6.1"></script>
+</body>
+</html>
