@@ -1,0 +1,24 @@
+/* AI Research Assistant */
+.turn-q{background:var(--teal-l);border-radius:12px;padding:10px 14px;margin:0 0 12px auto;max-width:80%;font-size:14.5px}
+.turn-q .who{font-size:12px;color:var(--teal-d);font-weight:700;display:block}
+.wf{list-style:none;padding:0;margin:8px 0;counter-reset:wf}
+.wf>li{counter-increment:wf;position:relative;padding:8px 0 8px 34px;border-top:1px solid var(--line)}
+.wf>li:before{content:counter(wf);position:absolute;left:0;top:8px;width:24px;height:24px;border-radius:50%;background:var(--bg);border:1px solid var(--line);display:grid;place-items:center;font-size:12px;font-weight:700;color:var(--ink2)}
+.wf>li.ok:before{background:var(--teal);border-color:var(--teal);color:#fff}
+.wf>li.warn:before{background:var(--amber);border-color:var(--amber);color:#fff}
+.wf>li.todo:before{background:#fff}
+.wf h4{margin:0 0 4px;font-size:14.5px}
+.badge{display:inline-block;border-radius:999px;padding:1px 8px;font-size:12px;font-weight:650;background:var(--bg);color:var(--ink2);margin-left:6px}
+.badge.ok{background:var(--teal-l);color:var(--teal-d)}.badge.warn{background:var(--amber-l);color:var(--amber)}.badge.bad{background:var(--red-l);color:var(--red)}
+.cov{font-variant-numeric:tabular-nums}
+.aisect{border-left:4px solid #7a4e9c;background:#f6f1fa;border-radius:8px;padding:10px 14px;margin:10px 0}
+.aisect h4{margin:0 0 6px;font-size:14px;color:#5b3878}
+.aisect li{margin:4px 0}
+.fid{display:inline-block;font:600 11px ui-monospace,Consolas,monospace;background:#fff;border:1px solid #d8c9e6;border-radius:4px;padding:0 4px;margin-left:3px;color:#5b3878;cursor:help}
+.facts li{margin:3px 0;font-size:13.5px}.facts .fid{background:var(--bg);border-color:var(--line);color:var(--ink2)}
+.ack{display:flex;gap:8px;align-items:flex-start;background:var(--amber-l);border-radius:8px;padding:10px 12px;font-size:13.5px;margin:10px 0}
+.cmp td.n{text-align:right}
+@media (max-width:760px){.turn-q{max-width:100%}}
+.card.inner{box-shadow:none;margin:12px 0;padding:14px}
+.card.plain{background:transparent;border:0;box-shadow:none;padding:0;margin-bottom:6px}
+[hidden]{display:none!important}

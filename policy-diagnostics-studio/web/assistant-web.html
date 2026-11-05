@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AI Research Assistant (in your browser) — Policy Diagnostics Studio</title>
+<link rel="stylesheet" href="../assets/studio.css?v=0.8.0"><link rel="stylesheet" href="../assets/research.css?v=0.8.0"><link rel="stylesheet" href="../assets/assistant.css?v=0.8.0">
+<style>#webpanel{border-left:4px solid var(--teal)}.wrow{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:14px;align-items:center;padding:8px 0;border-top:1px solid var(--line);font-size:14px}.wact{display:flex;flex-direction:column;gap:6px;align-items:flex-start}.wbar{grid-column:1/-1;height:6px;background:var(--bg);border-radius:3px;overflow:hidden}.wbar i{display:block;height:100%;width:0;background:var(--teal)}@media(max-width:760px){.wrow{grid-template-columns:1fr}}</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="topbar"><div class="in">
+  <a class="brand" href="../index.html#/"><span class="logo">P</span><span>Policy Diagnostics Studio<small>Open subnational evidence for policy</small></span></a>
+  <nav class="nav" aria-label="Main"><a href="../index.html#/">Analyse a country</a><a href="../index.html#/sources">Data sources &amp; methods</a><a href="../ai.html">Ask a question (AI, experimental)</a><a class="on" href="assistant-web.html" aria-current="page">AI Research Assistant</a><a href="research-web.html">Econometric Analysis</a><a href="../own-data.html">Use your own data</a></nav>
+</div></header>
+<main id="main" class="rwrap">
+  <section class="hero" style="padding-top:18px">
+    <h1>AI Research Assistant</h1>
+    <p>Ask an economic research question in plain language. A language model — Cloudflare Workers AI (your question and the computed facts are sent to Cloudflare) or, optionally, an open model running entirely in your browser — proposes a plan — indicators from the Studio’s catalogue, coverage, sample and supported methods. You check and approve it; the Studio’s validated engine runs it; the model then explains the computed results, and every number it uses is checked against them.</p>
+    <div id="aistatus" class="note info small">Start the engine below; the language model is optional.</div>
+  </section>
+  <section class="card" id="webpanel" data-model="yes"></section>
+  <div id="thread" aria-live="polite"></div>
+  <section class="card" id="ask">
+    <label class="f" for="q" id="qlabel">Your research question</label>
+    <textarea id="q" rows="3" maxlength="1500" placeholder="e.g. Compare unemployment and GDP growth in India, Bangladesh and Vietnam between 2010 and 2023 …"></textarea>
+    <div class="rex">
+      <button class="btn sm ghost" data-q="Compare unemployment and GDP growth in India, Bangladesh and Vietnam between 2010 and 2023. Show trends, construct a comparable country-year panel and estimate the association using country fixed effects.">Demonstration question</button>
+      <button class="btn sm ghost" data-f="now include year fixed effects" hidden>Follow-up: add year fixed effects</button>
+    </div>
+    <div class="ractions"><button id="send" class="btn primary">Propose a plan</button><button id="reset" class="btn ghost" hidden>New question</button><span id="busy" class="small muted" role="status" aria-live="polite"></span></div>
+    <p class="small muted">AI options: Cloudflare Workers AI (Llama 3.3 70B; question, plan details and computed facts are sent to Cloudflare; free daily allowance) or Qwen3-4B via WebLLM in your browser (nothing is sent). Data, estimation and all checks always run in your browser. Prefer manual controls? Use the <a href="research-web.html">Econometric Analysis workbench</a>.</p>
+  </section>
+</main>
+<footer>Policy Diagnostics Studio v0.10 · data, estimation and all checks run in your browser (Pyodide, DuckDB in Python, statsmodels, linearmodels) · AI research assistant: Cloudflare Workers AI (your question, plan details and computed facts are sent to Cloudflare) or Qwen3-4B via WebLLM in your browser · public, redistribution-cleared data only · no paid services, no data files uploaded. Public research preview by <a href="https://rahulsh97.github.io/">Rahul Shukla</a>.</footer>
+<script>window.PDS_ENV = {workbench: 'research-web.html', where: 'see the panel above for where each step runs', noServer: '<strong>The in-browser engine is not running.</strong> Start it in the panel above.'}; window.PDS_CLOUD_AI = {endpoint: "https://policy-diagnostics-ai.rahulshuklakrc.workers.dev"};</script>
+<script src="runtime.js?v=0.10.2"></script>
+<script src="panel.js?v=0.10.2"></script>
+<script src="../assets/research.js?v=0.8.0"></script>
+<script src="../assets/assistant.js?v=0.8.0"></script>
+</body>
+</html>
