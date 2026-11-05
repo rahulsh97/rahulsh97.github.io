@@ -47,7 +47,7 @@
   }
   async function route() {
     const {seg, q} = parse();
-    document.querySelectorAll('[data-nav]').forEach(a => a.classList.toggle('on', (a.dataset.nav === 'sources') === (seg[0] === 'sources') && a.dataset.nav !== 'own' && a.dataset.nav !== 'ai' && a.dataset.nav !== 'research' && a.dataset.nav !== 'assistant' && a.dataset.nav !== 'local'));
+    document.querySelectorAll('[data-nav]').forEach(a => a.classList.toggle('on', (a.dataset.nav === 'sources') === (seg[0] === 'sources') && a.dataset.nav !== 'own' && a.dataset.nav !== 'ai' && a.dataset.nav !== 'research' && a.dataset.nav !== 'assistant'));
     try {
       if (seg[0] === 'sources') return await viewSources(q);
       if (seg[0] === 'c' && seg[1]) {

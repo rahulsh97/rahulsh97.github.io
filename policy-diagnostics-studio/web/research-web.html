@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Econometric Analysis (in your browser) — Policy Diagnostics Studio</title>
+<link rel="stylesheet" href="../assets/studio.css?v=0.8.0"><link rel="stylesheet" href="../assets/research.css?v=0.8.0">
+<style>#webpanel{border-left:4px solid var(--teal)}.wrow{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:14px;align-items:center;padding:8px 0;border-top:1px solid var(--line);font-size:14px}.wact{display:flex;flex-direction:column;gap:6px;align-items:flex-start}.wbar{grid-column:1/-1;height:6px;background:var(--bg);border-radius:3px;overflow:hidden}.wbar i{display:block;height:100%;width:0;background:var(--teal)}@media(max-width:760px){.wrow{grid-template-columns:1fr}}</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="topbar"><div class="in">
+  <a class="brand" href="../index.html#/"><span class="logo">P</span><span>Policy Diagnostics Studio<small>Open subnational evidence for policy</small></span></a>
+  <nav class="nav" aria-label="Main"><a href="../index.html#/">Analyse a country</a><a href="../index.html#/sources">Data sources &amp; methods</a><a href="../ai.html">Ask a question (AI, experimental)</a><a href="assistant-web.html">AI Research Assistant</a><a class="on" href="research-web.html" aria-current="page">Econometric Analysis</a><a href="../own-data.html">Use your own data</a></nav>
+</div></header>
+<main id="main" class="rwrap">
+  <section class="hero" style="padding-top:18px">
+    <h1>Econometric Analysis</h1>
+    <p>Choose countries, indicators and years from the Studio’s warehouse, check the sample, pick a model and run it. Every step is an explicit, validated operation you can inspect before anything is estimated. Results are associations, not causal effects.</p>
+    <div id="server" class="note info small">Connecting to the local research server…</div>
+  </section>
+  <section class="card" id="webpanel" data-model="no"></section>
+
+  <section class="card" id="s1">
+    <h2>1. Describe the analysis <span class="muted small">(optional)</span></h2>
+    <p class="small muted">A rule-based parser (no language model) turns your question into a draft plan — countries, indicators from a documented vocabulary, years and analyses. Check and complete everything in steps 2–3.</p>
+    <textarea id="question" rows="2" maxlength="1000" placeholder="e.g. Compare GDP growth, inflation and unemployment in Kenya, Brazil and India from 2000 to 2023"></textarea>
+    <div class="rex" aria-label="Example questions">
+      <button class="btn sm ghost" data-q="Compare GDP growth, inflation and unemployment in Kenya, Brazil and India from 2000 to 2023">Three-country comparison</button>
+      <button class="btn sm ghost" data-q="For Sub-Saharan African countries 2000-2019, estimate a panel fixed effects model of log GDP per capita on trade, investment and urbanisation with year fixed effects">Panel fixed effects (SSA)</button>
+      <button class="btn sm ghost" data-q="What is the effect of trade on GDP growth in Kenya, Brazil and India 2000-2020 with country fixed effects?">A request that is declined</button>
+      <button class="btn sm ghost" data-q="Retrieve life expectancy and health expenditure for Latin American countries 2005-2020, compare trends, build a panel and regress life expectancy on health spending with fixed effects">Multi-step question</button>
+    </div>
+    <div class="ractions"><button id="draft" class="btn primary">Draft a plan</button></div>
+    <div id="draftout"></div>
+  </section>
+
+  <section class="card" id="s2">
+    <h2>2. Data</h2>
+    <div class="rgrid">
+      <div>
+        <label class="f" for="csearch">Countries <span class="muted" id="ccount"></span></label>
+        <input id="csearch" type="search" list="clist" placeholder="Type a country and press Enter" autocomplete="off"><datalist id="clist"></datalist>
+        <div class="rrow"><select id="group" aria-label="Add a country group"><option value="">Add a group…</option></select><button id="clear" class="btn sm ghost">Clear</button></div>
+        <div id="chips" class="rchips" aria-live="polite"></div>
+      </div>
+      <div>
+        <label class="f">Years</label>
+        <div class="rrow"><input id="y0" type="number" min="1960" max="2100" placeholder="Start" aria-label="Start year"><span>to</span><input id="y1" type="number" min="1960" max="2100" placeholder="End" aria-label="End year"></div>
+        <p class="small muted">Country level (one value per country and year). Subnational levels are supported by the data engine but not yet offered for models.</p>
+      </div>
+    </div>
+    <label class="f" for="isearch" style="margin-top:14px">Indicators</label>
+    <div class="rrow"><input id="isearch" type="search" placeholder="Search the catalogue, e.g. ‘gdp per capita’, ‘inflation’, ‘NE.TRD.GNFS.ZS’"><button id="isbtn" class="btn sm">Search</button></div>
+    <div id="iresults" class="iresults"></div>
+    <div class="tablewrap"><table class="rtable" id="vars"><thead><tr><th>Name</th><th>Indicator</th><th>Transformation</th><th>Breakdown</th><th></th></tr></thead><tbody></tbody></table></div>
+    <div class="ractions"><button id="preview" class="btn">Preview sample and compatibility</button></div>
+    <div id="previewout"></div>
+  </section>
+
+  <section class="card" id="s3">
+    <h2>3. Analyses</h2>
+    <div class="rgrid">
+      <div>
+        <label class="rchk"><input type="checkbox" id="a_desc" checked> Descriptive statistics</label>
+        <label class="rchk"><input type="checkbox" id="a_corr"> Correlations</label>
+        <div class="f" style="margin-top:8px">Compare trends by country</div><div id="a_trends" class="rchecks"></div>
+      </div>
+      <div>
+        <label class="f" for="m_method">Model</label>
+        <select id="m_method"><option value="">No model</option><option value="ols">OLS regression</option><option value="panel_fe">Panel fixed effects</option></select>
+        <div id="mopts" hidden>
+          <label class="f" for="m_y" style="margin-top:8px">Dependent variable</label><select id="m_y"></select>
+          <div class="f" style="margin-top:8px">Explanatory variables</div><div id="m_x" class="rchecks"></div>
+          <div id="feopts"><label class="rchk"><input type="checkbox" id="m_ent" checked> Country fixed effects</label><label class="rchk"><input type="checkbox" id="m_time"> Year fixed effects</label></div>
+          <label class="f" for="m_se" style="margin-top:8px">Standard errors</label><select id="m_se"></select>
+        </div>
+        <details class="small" style="margin-top:10px"><summary>Methods not yet available</summary><ul id="unavail"></ul></details>
+      </div>
+    </div>
+    <details class="small rplan"><summary>Inspect the plan (the exact operations that will run)</summary><pre id="plan" class="mono"></pre></details>
+    <div class="ractions"><button id="run" class="btn primary">Run analysis</button><span id="runstatus" class="small muted" role="status" aria-live="polite"></span></div>
+  </section>
+
+  <div id="results" aria-live="polite"></div>
+</main>
+<footer>Policy Diagnostics Studio v0.10 · data, estimation and all checks run in your browser (Pyodide, DuckDB in Python, statsmodels, linearmodels) · AI research assistant: Cloudflare Workers AI (your question, plan details and computed facts are sent to Cloudflare) or Qwen3-4B via WebLLM in your browser · public, redistribution-cleared data only · no paid services, no data files uploaded. Public research preview by <a href="https://rahulsh97.github.io/">Rahul Shukla</a>.</footer>
+<script>window.PDS_ENV = {connected: 'Research engine running in this browser', noServer: '<strong>The in-browser engine could not be started.</strong> See the panel above. The country explorer and question classifier work without it.'};</script>
+<script src="runtime.js?v=0.10.2"></script>
+<script src="panel.js?v=0.10.2"></script>
+<script src="../assets/research.js?v=0.8.0"></script>
+</body>
+</html>
